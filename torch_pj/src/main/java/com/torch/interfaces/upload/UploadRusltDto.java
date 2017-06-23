@@ -1,5 +1,6 @@
 package com.torch.interfaces.upload;
 
+import com.torch.interfaces.common.facade.dto.CodeMessage;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,4 +11,5 @@ import lombok.Data;
 @Builder
 public class UploadRusltDto {
   private String absolutePath;
+  private CodeMessage codeMessage;
 }

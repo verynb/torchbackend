@@ -12,6 +12,7 @@ import com.torch.application.school.SchoolService;
 import com.torch.application.upload.ImageUploadService;
 import com.torch.application.upload.PhotoPath;
 import com.torch.domain.model.school.School;
+import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,7 +51,7 @@ public class UploadResource {
   }
 
   @RoleCheck
-  @ApiOperation(value = "上传头像", notes = "",  httpMethod = "POST")
+  @ApiOperation(value = "上传头像", notes = "", httpMethod = "POST")
   @RequestMapping(path = "/headPhoto", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
   public UploadRusltDto uploadHeadPhoto(@RequestBody UploadDto uploadDto) {
@@ -59,6 +60,22 @@ public class UploadResource {
       throw new RuntimeException("头像上传失败");
     }
     return UploadRusltDto.builder()
+        .codeMessage(new CodeMessage())
+        .absolutePath(SERVER_PREFIX + fullPath)
+        .build();
+  }
+
+  @RoleCheck
+  @ApiOperation(value = "上传家访图片", notes = "", httpMethod = "POST")
+  @RequestMapping(path = "/visitPhoto", method = POST)
+  @ResponseStatus(HttpStatus.CREATED)
+  public UploadRusltDto uploadVisitPhoto(@RequestBody UploadDto uploadDto) {
+    String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), photoPath.getVisit());
+    if (StringUtils.isBlank(fullPath)) {
+      throw new RuntimeException("上传失败");
+    }
+    return UploadRusltDto.builder()
+        .codeMessage(new CodeMessage())
         .absolutePath(SERVER_PREFIX + fullPath)
         .build();
   }
