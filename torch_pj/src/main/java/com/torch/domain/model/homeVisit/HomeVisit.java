@@ -5,9 +5,11 @@
 package com.torch.domain.model.homeVisit;
 
 import com.torch.domain.model.common.IdEntity;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +29,10 @@ public class HomeVisit extends IdEntity implements Serializable {
 
   private final static long serialVersionUID = 1L;
 
+  /**
+   * 发布批次ID
+   */
+  private Long batchId;
   /**
    * 学生ID
    */

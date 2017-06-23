@@ -28,6 +28,10 @@ public class HomeVisitAuditItem extends IdEntity implements Serializable {
   private final static long serialVersionUID = 1L;
 
   /**
+   * 发布批次ID
+   */
+  private Long batchId;
+  /**
    * 家访ID
    */
   private Long homeVisitId;

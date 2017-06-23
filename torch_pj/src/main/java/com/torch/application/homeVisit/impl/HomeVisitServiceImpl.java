@@ -42,6 +42,7 @@ public class HomeVisitServiceImpl implements HomeVisitService {
   @Transient
   public void saveHomeVisit(CreateHomeVisitCommand command) {
     HomeVisit homeVisit = HomeVisit.builder()
+        .batchId(command.getBatchId())
         .applicationForm(buildPhtot(command.getApplicationForms()))
         .familyPhoto(buildPhtot(command.getFamilyPhotos()))
         .homePhoto(buildPhtot(command.getHomePhotos()))
@@ -53,6 +54,7 @@ public class HomeVisitServiceImpl implements HomeVisitService {
     homeVisitRepository.save(homeVisit);
     command.getAuditItemIds().forEach(item -> {
       HomeVisitAuditItem newItem = HomeVisitAuditItem.builder()
+          .batchId(command.getBatchId())
           .homeVisitId(homeVisit.getId())
           .auditItemId(item)
           .build();

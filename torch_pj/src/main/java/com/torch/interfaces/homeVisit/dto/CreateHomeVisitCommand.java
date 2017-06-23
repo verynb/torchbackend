@@ -2,6 +2,7 @@ package com.torch.interfaces.homeVisit.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -9,6 +10,11 @@ import lombok.Data;
  */
 @Data
 public class CreateHomeVisitCommand {
+
+  @NotNull
+  @ApiModelProperty(name = "发布批次ID", required = true, position = 1)
+  private Long batchId;
+
   @ApiModelProperty(value = "学生ID", required = true)
   private Long studentId;
   /**
@@ -19,7 +25,7 @@ public class CreateHomeVisitCommand {
 
   //学生本人
   @ApiModelProperty(value = "学生本人图片,一张或多张", required = false)
-  private  List<String> studentPhotos;
+  private List<String> studentPhotos;
 
   //家庭成员
   @ApiModelProperty(value = "家庭成员图片,一张或多张", required = false)
