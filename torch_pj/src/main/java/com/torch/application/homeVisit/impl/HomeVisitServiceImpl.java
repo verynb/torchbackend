@@ -57,6 +57,7 @@ public class HomeVisitServiceImpl implements HomeVisitService {
           .batchId(command.getBatchId())
           .homeVisitId(homeVisit.getId())
           .auditItemId(item)
+          .studentId(command.getStudentId())
           .build();
       homeVistAuditItemRepository.save(newItem);
     });

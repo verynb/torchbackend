@@ -40,4 +40,9 @@ public class HomeVisitAuditItem extends IdEntity implements Serializable {
    * 审核项的ID
    */
   private Long auditItemId;
+
+  /**
+   * 学生ID
+   */
+  private Long studentId;
 }
