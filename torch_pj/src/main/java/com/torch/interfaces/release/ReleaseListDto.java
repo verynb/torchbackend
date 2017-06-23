@@ -29,4 +29,7 @@ public class ReleaseListDto {
   @ApiModelProperty(name = "年级", required = true, position = 8)
   private String grade;
 
+  @ApiModelProperty(name = "审核得分", required = true, position = 9)
+  private double scores;
+
 }

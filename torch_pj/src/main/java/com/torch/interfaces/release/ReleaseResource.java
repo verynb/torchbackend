@@ -13,6 +13,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import com.google.common.collect.Lists;
 import com.torch.application.release.ReleaseService;
+import com.torch.domain.model.audit.AuditItem;
+import com.torch.domain.model.audit.AuditItemRepository;
+import com.torch.domain.model.homeVisit.HomeVisitAuditItem;
+import com.torch.domain.model.homeVisit.HomeVisitAuditItemRepository;
+import com.torch.domain.model.homeVisit.QHomeVisitAuditItem;
 import com.torch.domain.model.release.QRelease;
 import com.torch.domain.model.release.QReleaseStudent;
 import com.torch.domain.model.release.Release;
@@ -75,15 +80,23 @@ public class ReleaseResource {
 
   private final StudentRepository studentRepository;
 
+  private final HomeVisitAuditItemRepository homeVisitAuditItemRepository;
+
+  private final AuditItemRepository auditItemRepository;
+
   @Autowired
   public ReleaseResource(final ReleaseService releaseService,
       final ReleaseRepository releaseRepository,
       final ReleaseStudentRepository releaseStudentRepository,
-      final StudentRepository studentRepository) {
+      final StudentRepository studentRepository,
+      final HomeVisitAuditItemRepository homeVisitAuditItemRepository,
+      final AuditItemRepository auditItemRepository) {
     this.releaseService = releaseService;
     this.releaseRepository = releaseRepository;
     this.releaseStudentRepository = releaseStudentRepository;
     this.studentRepository = studentRepository;
+    this.homeVisitAuditItemRepository = homeVisitAuditItemRepository;
+    this.auditItemRepository = auditItemRepository;
   }
 
   @RoleCheck
@@ -148,6 +161,7 @@ public class ReleaseResource {
           .codeMessage(new CodeMessage())
           .build();
     }
+    List<AuditItem> auditItems = (List<AuditItem>) auditItemRepository.findAll();
     List<ReleaseListDto> resultList = Lists.newArrayList();
     releases.forEach(release -> {
       List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
@@ -157,7 +171,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(release, filteredStudent));
+        resultList.add(toDto(release, filteredStudent,auditItems));
       });
     });
     return ReleaseListResultDto.builder()
@@ -184,7 +198,7 @@ public class ReleaseResource {
           .codeMessage(new CodeMessage())
           .build();
     }
-
+    List<AuditItem> auditItems = (List<AuditItem>) auditItemRepository.findAll();
     List<ReleaseListDto> resultList = Lists.newArrayList();
 
     releases.forEach(release -> {
@@ -195,7 +209,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(release, filteredStudent));
+        resultList.add(toDto(release, filteredStudent,auditItems));
       });
     });
     return ReleaseListResultDto.builder()
@@ -204,7 +218,7 @@ public class ReleaseResource {
         .build();
   }
 
-  private ReleaseListDto toDto(Release release, Student student) {
+  private ReleaseListDto toDto(Release release, Student student, List<AuditItem> auditItems) {
     if (release == null || student == null) {
       return ReleaseListDto.builder().build();
     }
@@ -216,9 +230,28 @@ public class ReleaseResource {
         .province(release.getProvince())
         .releaseId(release.getId())
         .studentId(student.getId())
+        .scores(buildScores(release.getId(), student.getId(), auditItems))
         .studentName(student.getName())
         .build();
   }
 
-
+  private double buildScores(Long batchId, Long studentId, List<AuditItem> auditItems) {
+    double scores = 0d;
+    List<HomeVisitAuditItem> items = (List<HomeVisitAuditItem>) homeVisitAuditItemRepository
+        .findAll(QHomeVisitAuditItem.homeVisitAuditItem.batchId.eq(batchId)
+            .and(QHomeVisitAuditItem.homeVisitAuditItem.studentId.eq(studentId)));
+    if (CollectionUtils.isEmpty(auditItems) || CollectionUtils.isEmpty(items)) {
+      return scores;
+    }
+    for (HomeVisitAuditItem item : items) {
+      AuditItem filterItem = auditItems.stream()
+          .filter(auditItem -> auditItem.getId().equals(item.getAuditItemId()))
+          .findFirst()
+          .orElse(null);
+      if (filterItem != null) {
+        scores += filterItem.getScores();
+      }
+    }
+    return scores;
+  }
 }
