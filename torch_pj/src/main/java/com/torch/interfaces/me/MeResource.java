@@ -5,6 +5,7 @@ import com.torch.interfaces.common.Responses;
 import com.torch.interfaces.common.facade.dto.ReturnIdDto;
 import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
+import com.torch.interfaces.me.dto.PasswordUpdateDto;
 import com.torch.interfaces.user.facade.UserServiceFacade;
 import com.torch.interfaces.user.facade.dto.TokenDTO;
 import com.torch.interfaces.user.facade.dto.UserDTO;
@@ -41,7 +42,10 @@ public class MeResource {
   @ApiOperation(value = "修改密码", notes = "", response = ReturnIdDto.class, httpMethod = "PUT")
   @RoleCheck
   @RequestMapping(path = "/password", method = PUT, produces = APPLICATION_JSON_VALUE)
-  public ReturnIdDto updatePassword(@RequestParam String password, @RequestParam String newPassword) {
-    return userServiceFacade.updatePassword(Session.getUserId(), password, newPassword);
+  public ReturnIdDto updatePassword(@Valid @RequestBody PasswordUpdateDto dto) {
+    if(!dto.getNewPassword().equals(dto.getNewPasswordTwo())){
+      throw new RuntimeException("新密码确认不一致");
+    }
+    return userServiceFacade.updatePassword(Session.getUserId(), dto.getPassword(), dto.getNewPassword());
   }
 }
