@@ -3,8 +3,10 @@ package com.torch.interfaces.common;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.exceptions.UnAuthorizedException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.security.exceptions.TokenNotExistException;
@@ -29,12 +31,20 @@ public class ApplicationErrorMapping {
     return applicationError("failed", "用户名或密码错误");
   }
 
+  @ExceptionHandler(TorchException.class)
+  @ResponseStatus(OK)
+  @ResponseBody
+  public ApplicationError torch(TorchException e) {
+    return applicationError("failed", e.getMessage());
+  }
+
   @ExceptionHandler(RuntimeException.class)
-  @ResponseStatus(BAD_REQUEST)
+  @ResponseStatus(OK)
   @ResponseBody
   public ApplicationError runtimeException(RuntimeException e) {
     return applicationError("failed", e.getMessage());
   }
+
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(INTERNAL_SERVER_ERROR)

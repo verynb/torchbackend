@@ -13,6 +13,7 @@ import com.torch.domain.model.user.QTeacherSchool;
 import com.torch.domain.model.user.QUser;
 import com.torch.domain.model.user.TeacherSchool;
 import com.torch.domain.model.user.TeacherSchoolRepository;
+import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.user.command.SponsorAddCommand;
 import com.torch.interfaces.user.command.SponsorUpdateCommand;
@@ -75,13 +76,13 @@ public class UserFacadeImpl implements UserFacade {
     List<User> users = (List<User>) userRepository
         .findAll(QUser.user.mobile.eq(command.getMobile()));
     if (CollectionUtils.isNotEmpty(users)) {
-      throw new RuntimeException("手机号重复");
+      throw new TorchException("手机号重复");
     }
     if (!Objects.isNull(command.getRoleId())) {
       DictVolunteerRole role = dictVolunteerRoleRepository.findOne(command.getRoleId());
       if (role != null && role.getRoleCode().equals("teacher")) {
         if (CollectionUtils.isEmpty(command.getSchoolIds())) {
-          throw new RuntimeException("请选择学校");
+          throw new TorchException("请选择学校");
         }
       }
     }
@@ -150,7 +151,7 @@ public class UserFacadeImpl implements UserFacade {
     List<User> users = (List<User>) userRepository
         .findAll(QUser.user.mobile.eq(command.getMobile()));
     if (CollectionUtils.isNotEmpty(users)) {
-      throw new RuntimeException("手机号重复");
+      throw new TorchException("手机号重复");
     }
     return UserAddDTO.builder()
         .id(userService.addSponsor(command))

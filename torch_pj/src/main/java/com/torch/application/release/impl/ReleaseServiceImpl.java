@@ -16,6 +16,7 @@ import com.torch.domain.model.school.School;
 import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
+import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
@@ -57,7 +58,7 @@ public class ReleaseServiceImpl implements ReleaseService {
   public Long addRelease(AddReleaseCommand command) {
     Release release = new Release();
     if (releaseRepository.count(QRelease.release.batchNo.eq(command.getBatchNo())) > 0) {
-      throw new RuntimeException("批次重复");
+      throw new TorchException("批次重复");
     }
     BeanUtils.copyProperties(command, release);
     release.setCreateTime(new DateTime());
@@ -98,7 +99,7 @@ public class ReleaseServiceImpl implements ReleaseService {
       Student student = studentRepository.findOne(releaseStudent.getStudentId());
       if (student != null) {
         if (student.getStatus() >= 4) {
-          throw new RuntimeException("已经发布不能删除");
+          throw new TorchException("已经发布不能删除");
         }
         student.setStatus(0);
         studentRepository.save(student);

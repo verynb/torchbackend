@@ -2,6 +2,7 @@ package com.torch.interfaces.me;
 
 import com.torch.interfaces.common.ApiPaths;
 import com.torch.interfaces.common.Responses;
+import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.ReturnIdDto;
 import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
@@ -28,7 +29,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping(path = ApiPaths.API_CONTEXT_PATH + "/me", produces = APPLICATION_JSON_VALUE)
-@Api(tags ={"AuthenticationResource-api"}, description = "个人中心相关api")
+@Api(tags ={"MeResource-api"}, description = "个人中心相关api")
 public class MeResource {
 
   private final UserServiceFacade userServiceFacade;
@@ -44,7 +45,7 @@ public class MeResource {
   @RequestMapping(path = "/password", method = PUT, produces = APPLICATION_JSON_VALUE)
   public ReturnIdDto updatePassword(@Valid @RequestBody PasswordUpdateDto dto) {
     if(!dto.getNewPassword().equals(dto.getNewPasswordTwo())){
-      throw new RuntimeException("新密码确认不一致");
+      throw new TorchException("新密码确认不一致");
     }
     return userServiceFacade.updatePassword(Session.getUserId(), dto.getPassword(), dto.getNewPassword());
   }

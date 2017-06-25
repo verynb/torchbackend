@@ -1,5 +1,6 @@
 package com.torch.application.upload;
 
+import com.torch.interfaces.common.exceptions.TorchException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -18,7 +19,7 @@ public class ImageUploadService {
   public String GenerateImage(String imgStr, String imgFilePath) {// 对字节数组字符串进行Base64解码并生成图片
     if (StringUtils.isBlank(imgStr)) // 图像数据为空
     {
-      throw new RuntimeException("上传图片为空");
+      throw new TorchException("上传图片为空");
     }
 
     if (!new File(imgFilePath).exists()) {

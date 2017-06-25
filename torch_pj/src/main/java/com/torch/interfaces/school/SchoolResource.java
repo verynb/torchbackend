@@ -103,12 +103,15 @@ public class SchoolResource {
   @ApiOperation(value = "获取学校列表", notes = "", httpMethod = "GET")
   @RequestMapping(path = "/schools", method = GET)
   public SchoolListDto getVolunteers(
-      @ApiParam(value = "分页条数") @RequestParam(required = false, defaultValue = "15") Integer pageSize,
-      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage,
+      @ApiParam(value = "分页条数") @RequestParam(required = false) int pageSize,
+      @ApiParam(value = "当前页") @RequestParam(required = false) int currentPage,
       @ApiParam(value = "学校名称") @RequestParam(required = false) String schoolName
   ) {
-    Pageable pageable = new PageRequest(currentPage, pageSize);
 
+    Pageable pageable = new PageRequest(currentPage, pageSize);
+    if(pageSize==0 || currentPage==0){
+      pageable=null;
+    }
     BooleanBuilder conditions = new BooleanBuilder();
     conditions.and(QSchool.school.isNotNull());
     if(StringUtils.isNotBlank(schoolName)){

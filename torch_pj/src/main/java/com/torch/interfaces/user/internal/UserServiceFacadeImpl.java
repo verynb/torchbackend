@@ -5,6 +5,7 @@ import com.torch.domain.model.user.DictVolunteerRole;
 import com.torch.domain.model.user.DictVolunteerRoleRepository;
 import com.torch.domain.model.version.DictUpgrade;
 import com.torch.domain.model.version.DictUpgradeRepository;
+import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ReturnIdDto;
 import com.torch.interfaces.common.security.TokenService;
@@ -93,10 +94,10 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
   public ReturnIdDto updatePassword(Long userId, String password, String newPassword) {
     User user = userRepository.findOne(userId);
     if(user==null){
-      throw new RuntimeException("非法用户");
+      throw new TorchException("非法用户");
     }
     if (!user.isValidPassword(password)){
-      throw new RuntimeException("原密码不正确");
+      throw new TorchException("原密码不正确");
     }
     user.setEncryptPassword(newPassword);
     userRepository.save(user);

@@ -12,6 +12,7 @@ import com.torch.application.school.SchoolService;
 import com.torch.application.upload.ImageUploadService;
 import com.torch.application.upload.PhotoPath;
 import com.torch.domain.model.school.School;
+import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
 import io.swagger.annotations.Api;
@@ -57,7 +58,7 @@ public class UploadResource {
   public UploadRusltDto uploadHeadPhoto(@RequestBody UploadDto uploadDto) {
     String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), photoPath.getHead());
     if (StringUtils.isBlank(fullPath)) {
-      throw new RuntimeException("头像上传失败");
+      throw new TorchException("头像上传失败");
     }
     return UploadRusltDto.builder()
         .codeMessage(new CodeMessage())
@@ -72,7 +73,7 @@ public class UploadResource {
   public UploadRusltDto uploadVisitPhoto(@RequestBody UploadDto uploadDto) {
     String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), photoPath.getVisit());
     if (StringUtils.isBlank(fullPath)) {
-      throw new RuntimeException("上传失败");
+      throw new TorchException("上传失败");
     }
     return UploadRusltDto.builder()
         .codeMessage(new CodeMessage())
