@@ -11,6 +11,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import com.querydsl.core.BooleanBuilder;
 import com.torch.application.school.SchoolService;
 import com.torch.domain.model.school.QSchool;
 import com.torch.domain.model.school.School;
@@ -23,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
 import javax.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -102,10 +104,17 @@ public class SchoolResource {
   @RequestMapping(path = "/schools", method = GET)
   public SchoolListDto getVolunteers(
       @ApiParam(value = "分页条数") @RequestParam(required = false, defaultValue = "15") Integer pageSize,
-      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage
+      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage,
+      @ApiParam(value = "学校名称") @RequestParam(required = false) String schoolName
   ) {
     Pageable pageable = new PageRequest(currentPage, pageSize);
-    Page<School> page = schoolRepository.findAll(QSchool.school.isNotNull(), pageable);
+
+    BooleanBuilder conditions = new BooleanBuilder();
+    conditions.and(QSchool.school.isNotNull());
+    if(StringUtils.isNotBlank(schoolName)){
+      conditions.and(QSchool.school.schoolName.eq(schoolName));
+    }
+    Page<School> page = schoolRepository.findAll(conditions, pageable);
     return SchoolListDto.builder()
         .schools(page.getContent())
         .codeMessage(new CodeMessage())
