@@ -124,7 +124,7 @@ public class ReleaseResource {
   @RoleCheck
   @ApiOperation(value = "删除发布批次中添加的学生", notes = "", httpMethod = "DELETE")
   @RequestMapping(path = "/release/student/{id}", method = DELETE)
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public ReturnDto deleteReleaseStudent(@PathVariable("id") Long id) {
     releaseService.deleteReleaseStudent(id);
     return ReturnDto.builder()

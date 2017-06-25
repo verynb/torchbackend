@@ -102,7 +102,7 @@ public class UserResource {
 
   @ApiOperation(value = "删除义工", notes = "", httpMethod = "DELETE")
   @RequestMapping(path = "/user/volunteer/{id}", method = DELETE)
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public ReturnDto deleteUser(@PathVariable("id") Long id) {
     userFacade.deleteUser(id);
     return ReturnDto.builder()
@@ -175,7 +175,7 @@ public class UserResource {
 
   @ApiOperation(value = "删除资助人", notes = "", httpMethod = "DELETE")
   @RequestMapping(path = "/user/sponsor/{id}", method = DELETE)
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public ReturnDto deleteSponsor(@PathVariable("id") Long id) {
     userFacade.deleteUser(id);
     return ReturnDto.builder()

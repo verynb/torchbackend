@@ -85,7 +85,7 @@ public class StudentResource {
   @RoleCheck
   @ApiOperation(value = "删除学生", notes = "", httpMethod = "DELETE")
   @RequestMapping(path = "/student/{id}", method = DELETE)
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public ReturnDto deleteStudent(@PathVariable("id") Long id) {
     studentService.deleteStudent(id);
     return ReturnDto.builder()
