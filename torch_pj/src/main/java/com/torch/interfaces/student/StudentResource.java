@@ -94,7 +94,7 @@ public class StudentResource {
   }
 
   @RoleCheck
-  @ApiOperation(value = "获取学生详细", notes = "", response = StudentDetailDto.class, httpMethod = "GET")
+  @ApiOperation(value = "获取学生详细", notes = "", response = StudentDetail.class, httpMethod = "GET")
   @RequestMapping(path = "/student/{id}", method = GET)
   public StudentDetail getStudentDetail(@PathVariable("id") Long id) {
     StudentDetail dto = studentService.getStudentDetail(id);

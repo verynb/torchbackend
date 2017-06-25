@@ -1,5 +1,6 @@
 package com.torch.domain.model.user;
 
+import com.torch.interfaces.common.facade.dto.ReturnIdDto;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,5 @@ public interface UserRepository extends CrudRepository<User, Long>,QueryDslPredi
     List<User> findByType(int type);
 
     User findByMobile(String mobile);
+
 }

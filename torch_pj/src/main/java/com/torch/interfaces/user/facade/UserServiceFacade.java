@@ -1,5 +1,6 @@
 package com.torch.interfaces.user.facade;
 
+import com.torch.interfaces.common.facade.dto.ReturnIdDto;
 import com.torch.interfaces.user.command.AuthenticateCommand;
 import com.torch.interfaces.user.facade.dto.UserDTO;
 import com.torch.interfaces.user.command.BindPhoneCommand;
@@ -15,5 +16,7 @@ public interface UserServiceFacade {
     Optional<UserDTO> ofId(Long id);
 
     Optional<TokenDTO> authenticate(AuthenticateCommand authenticateCommand);
+
+    ReturnIdDto updatePassword(Long userId,String password,String newPassword);
 
 }
