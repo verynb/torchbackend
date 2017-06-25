@@ -10,8 +10,10 @@ import com.torch.interfaces.user.facade.dto.SponsorDetailResultDto;
 import com.torch.interfaces.user.facade.dto.VolunteerDetailDto;
 import com.torch.interfaces.user.facade.dto.VolunteerDetailResultDto;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import com.torch.domain.model.user.User;
@@ -52,7 +54,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(user.getJoinTime().getMillis());
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
 		dto.setRoleName(role==null? "":role.getRoleName());
 		dto.setCodeMessage(new CodeMessage());
 		dto.setSchools(schools);
@@ -65,7 +67,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(user.getJoinTime().getMillis());
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
 		dto.setRoleName(role==null? "":role.getRoleName());
 		return dto;
 	}
@@ -76,7 +78,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(user.getJoinTime().getMillis());
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
 		dto.setCodeMessage(new CodeMessage());
 		return dto;
 	}
@@ -87,7 +89,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(user.getJoinTime().getMillis());
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
 		return dto;
 	}
 }

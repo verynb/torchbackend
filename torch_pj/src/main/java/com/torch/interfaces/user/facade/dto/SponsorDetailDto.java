@@ -45,7 +45,7 @@ public class SponsorDetailDto {
 	private String address;
 
 	@ApiModelProperty(value = "注册时间", required = true)
-	private Long joinTime;
+	private String joinTime;
 
 	@ApiModelProperty(value = "头像", required = true)
 	private String photo;

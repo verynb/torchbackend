@@ -45,7 +45,7 @@ public class VolunteerAddCommand {
   private String address;
 
   @ApiModelProperty(value = "加入时间,时间戳", required = true)
-  private Long joinTime;
+  private String joinTime;
 
   @ApiModelProperty(value = "密码", required = true)
   private String password;

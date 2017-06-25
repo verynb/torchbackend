@@ -7,10 +7,13 @@ import com.torch.interfaces.user.command.SponsorAddCommand;
 import com.torch.interfaces.user.command.SponsorUpdateCommand;
 import com.torch.interfaces.user.command.VolunteerAddCommand;
 import com.torch.interfaces.user.command.VolunteerUpdateCommand;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +54,13 @@ public class UserServiceImpl implements UserService {
     User user = new User();
     BeanUtils.copyProperties(command, user);
     user.setEncryptPassword(command.getPassword());
-    user.setJoinTime(new DateTime(command.getJoinTime()));
+    if (StringUtils.isNotBlank(command.getJoinTime())) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      try {
+        user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
+      } catch (ParseException e) {
+      }
+    }
     user.setCreateTime(new DateTime());
     user.setLastUpdateTime(new DateTime());
     user.setType(0);
@@ -73,7 +82,13 @@ public class UserServiceImpl implements UserService {
     User user = new User();
     BeanUtils.copyProperties(command, user);
     user.setEncryptPassword(command.getPassword());
-    user.setJoinTime(new DateTime(command.getJoinTime()));
+    if (StringUtils.isNotBlank(command.getJoinTime())) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      try {
+        user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
+      } catch (ParseException e) {
+      }
+    }
 //    user.setCreateTime(new DateTime());
 //    user.setLastUpdateTime(new DateTime());
     user.setType(1);
@@ -90,7 +105,13 @@ public class UserServiceImpl implements UserService {
     user.setCity(command.getCity());
     user.setArea(command.getArea());
     user.setEmail(command.getEmail());
-    user.setJoinTime(new DateTime(command.getJoinTime()));
+    if (StringUtils.isNotBlank(command.getJoinTime())) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      try {
+        user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
+      } catch (ParseException e) {
+      }
+    }
     user.setMobile(command.getMobile());
     user.setName(command.getName());
     user.setNetName(command.getNetName());
@@ -123,7 +144,13 @@ public class UserServiceImpl implements UserService {
     user.setCity(command.getCity());
     user.setArea(command.getArea());
     user.setEmail(command.getEmail());
-    user.setJoinTime(new DateTime(command.getJoinTime()));
+    if (StringUtils.isNotBlank(command.getJoinTime())) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      try {
+        user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
+      } catch (ParseException e) {
+      }
+    }
     user.setMobile(command.getMobile());
     user.setName(command.getName());
     user.setNetName(command.getNetName());
