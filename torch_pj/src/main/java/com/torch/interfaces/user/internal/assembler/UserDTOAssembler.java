@@ -54,7 +54,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd"));
 		dto.setRoleName(role==null? "":role.getRoleName());
 		dto.setCodeMessage(new CodeMessage());
 		dto.setSchools(schools);
@@ -67,7 +67,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd"));
 		dto.setRoleName(role==null? "":role.getRoleName());
 		return dto;
 	}
@@ -78,7 +78,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd"));
 		dto.setCodeMessage(new CodeMessage());
 		return dto;
 	}
@@ -89,7 +89,7 @@ public class UserDTOAssembler {
 			return null;
 		}
 		BeanUtils.copyProperties(user, dto);
-		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd HH:mm:ss"));
+		dto.setJoinTime(Objects.isNull(user.getJoinTime())?"":user.getJoinTime().toString("yyyy-MM-dd"));
 		return dto;
 	}
 }

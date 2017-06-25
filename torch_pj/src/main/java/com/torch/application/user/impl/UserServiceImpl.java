@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     BeanUtils.copyProperties(command, user);
     user.setEncryptPassword(command.getPassword());
     if (StringUtils.isNotBlank(command.getJoinTime())) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
         user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
       } catch (ParseException e) {
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     BeanUtils.copyProperties(command, user);
     user.setEncryptPassword(command.getPassword());
     if (StringUtils.isNotBlank(command.getJoinTime())) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
         user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
       } catch (ParseException e) {
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     user.setArea(command.getArea());
     user.setEmail(command.getEmail());
     if (StringUtils.isNotBlank(command.getJoinTime())) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
         user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
       } catch (ParseException e) {
@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
     user.setArea(command.getArea());
     user.setEmail(command.getEmail());
     if (StringUtils.isNotBlank(command.getJoinTime())) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
         user.setJoinTime(new DateTime(sdf.parse(command.getJoinTime()).getTime()));
       } catch (ParseException e) {

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-@ApiModel(value = "修改义工参数")
+@ApiModel(value = "修改资助人参数")
 @Data
 public class SponsorUpdateCommand {
 	@NotNull
