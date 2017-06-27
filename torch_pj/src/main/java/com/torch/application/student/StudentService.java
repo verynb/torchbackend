@@ -16,7 +16,6 @@ import com.torch.interfaces.student.UpdateStudentCommand;
 import java.util.List;
 
 /**
- *
  * @author yuanj 2017-01-18 14:31:25
  * @version 1.0
  */
@@ -28,9 +27,11 @@ public interface StudentService {
 
   StudentDetail getStudentDetail(Long id);
 
-  List<StudentDetailDto> getAllStudents(Integer pageSize,Integer currentPage);
+  List<StudentDetailDto> getAllStudents(Integer pageSize, Integer currentPage, String province,
+      String city);
 
-  List<StudentDetailDto> filterStudents(Integer pageSize,Integer currentPage,StudentSearchDto dto);
+  List<StudentDetailDto> filterStudents(Integer pageSize, Integer currentPage,
+      StudentSearchDto dto);
 
   void deleteStudent(Long id);
 
