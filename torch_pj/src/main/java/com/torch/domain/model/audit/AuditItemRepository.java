@@ -4,6 +4,7 @@
  */
 package com.torch.domain.model.audit;
 
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -12,4 +13,5 @@ import org.springframework.data.repository.CrudRepository;
  * @version 1.0
  */
 public interface AuditItemRepository extends CrudRepository<AuditItem, Long> {
+  List<AuditItem> findByAuditId(Long id);
 }
