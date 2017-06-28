@@ -18,6 +18,7 @@ import com.torch.interfaces.user.facade.dto.TokenDTO;
 import com.torch.interfaces.user.facade.dto.UserDTO;
 import com.torch.interfaces.user.internal.assembler.UserDTOAssembler;
 import com.torch.util.cache.RedisUtils;
+import java.beans.Transient;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.collections.CollectionUtils;
@@ -63,6 +64,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
   }
 
   @Override
+  @Transient
   public Optional<TokenDTO> authenticate(AuthenticateCommand authenticateCommand) {
     final Optional<User> user = userService
         .authenticate(authenticateCommand.getUsername(), authenticateCommand.getPassword());
@@ -88,6 +90,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
   }
 
   @Override
+  @Transient
   public ReturnIdDto updatePassword(Long userId, String password, String newPassword) {
     User user = userRepository.findOne(userId);
     if(user==null){
