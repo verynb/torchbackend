@@ -106,8 +106,15 @@ public class ReleaseResource {
   public ReleaseDto addRelease() {
     List<Release> releases = (List<Release>) releaseRepository
         .findAll(QRelease.release.status.eq(0).or(QRelease.release.status.eq(1)));
+    List<ReleaseBatch> resultList=Lists.newArrayList();
+    releases.forEach(re->{
+      resultList.add(ReleaseBatch.builder()
+          .id(re.getId())
+          .batchNo(re.getBatchNo())
+          .build());
+    });
     return ReleaseDto.builder()
-        .releases(releases)
+        .releases(resultList)
         .codeMessage(new CodeMessage())
         .build();
   }

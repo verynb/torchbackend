@@ -13,6 +13,6 @@ import lombok.Data;
 @Builder
 public class ReleaseDto {
   private CodeMessage codeMessage;
-  private List<Release> releases;
+  private List<ReleaseBatch> releases;
 
 }
