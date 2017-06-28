@@ -108,9 +108,9 @@ public class SchoolResource {
       @ApiParam(value = "学校名称") @RequestParam(required = false) String schoolName
   ) {
 
-    Pageable pageable = new PageRequest(currentPage, pageSize);
-    if(pageSize==0 || currentPage==0){
-      pageable=null;
+    Pageable pageable = null;
+    if(pageSize!=0 && currentPage!=0){
+      pageable=new PageRequest(currentPage, pageSize);;
     }
     BooleanBuilder conditions = new BooleanBuilder();
     conditions.and(QSchool.school.isNotNull());

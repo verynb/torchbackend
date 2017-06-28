@@ -3,30 +3,27 @@ package com.torch.interfaces.user.internal;
 import com.torch.application.user.UserService;
 import com.torch.domain.model.user.DictVolunteerRole;
 import com.torch.domain.model.user.DictVolunteerRoleRepository;
+import com.torch.domain.model.user.User;
+import com.torch.domain.model.user.UserRepository;
 import com.torch.domain.model.version.DictUpgrade;
 import com.torch.domain.model.version.DictUpgradeRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ReturnIdDto;
+import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.common.security.TokenService;
 import com.torch.interfaces.user.command.AuthenticateCommand;
-import com.torch.interfaces.user.facade.dto.UserDTO;
-import com.torch.domain.model.user.UserRepository;
-import com.torch.interfaces.common.security.Session;
-import com.torch.interfaces.user.command.BindPhoneCommand;
 import com.torch.interfaces.user.facade.UserServiceFacade;
 import com.torch.interfaces.user.facade.dto.TokenDTO;
+import com.torch.interfaces.user.facade.dto.UserDTO;
 import com.torch.interfaces.user.internal.assembler.UserDTOAssembler;
 import com.torch.util.cache.RedisUtils;
-
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.torch.domain.model.user.User;
-import java.util.Optional;
 
 
 /**

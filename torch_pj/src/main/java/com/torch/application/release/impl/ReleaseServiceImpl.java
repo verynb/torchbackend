@@ -22,7 +22,10 @@ import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
+import com.torch.util.cache.RedisUtils;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
@@ -44,13 +47,17 @@ public class ReleaseServiceImpl implements ReleaseService {
 
   private final StudentRepository studentRepository;
 
+  private final RedisUtils redisUtils;
+
   @Autowired
   public ReleaseServiceImpl(final ReleaseRepository releaseRepository,
       final ReleaseStudentRepository releaseStudentRepository,
-      final StudentRepository studentRepository) {
+      final StudentRepository studentRepository,
+      final RedisUtils redisUtils) {
     this.releaseRepository = releaseRepository;
     this.releaseStudentRepository = releaseStudentRepository;
     this.studentRepository = studentRepository;
+    this.redisUtils = redisUtils;
   }
 
   @Override
@@ -111,21 +118,32 @@ public class ReleaseServiceImpl implements ReleaseService {
   @Transient
   public void release(Long batchId, List<Long> releaseStudentIds) {
     releaseStudentIds.forEach(id -> {
-
       ReleaseStudent releaseStudent = releaseStudentRepository.findOne(id);
       if (releaseStudent != null) {
+        if (releaseStudent.getNeedMoney() <= 0) {
+          throw new TorchException("请确认好发布学生所需金额");
+        }
         releaseStudent.setStatus(4);
         releaseStudentRepository.save(releaseStudent);
-        Student student = studentRepository.findOne(id);
+        Student student = studentRepository.findOne(releaseStudent.getStudentId());
         student.setStatus(4);
         studentRepository.save(student);
       }
-      if(releaseStudentRepository.count(QReleaseStudent.releaseStudent.batchId.eq(batchId)
-          .and(QReleaseStudent.releaseStudent.status.ne(4))) == 0){
-        Release release =releaseRepository.findOne(batchId);
-        release.setStatus(2);
-        releaseRepository.save(release);
-      }
     });
+
+    if (releaseStudentRepository.count(QReleaseStudent.releaseStudent.batchId.eq(batchId)
+        .and(QReleaseStudent.releaseStudent.status.ne(4))) == 0) {
+      Release release = releaseRepository.findOne(batchId);
+      release.setStatus(2);
+      releaseRepository.save(release);
+      //查询此批次所有已经发布的学生
+      List<ReleaseStudent> rss = (List<ReleaseStudent>) releaseStudentRepository
+          .findAll(QReleaseStudent.releaseStudent.batchId.eq(batchId));
+      Map<String, String> map = new HashMap<String, String>();
+      rss.forEach(rs -> {
+        map.put(rs.getStudentId().toString(), "0");
+      });
+      redisUtils.putMap(batchId.toString(),map);
+    }
   }
 }
