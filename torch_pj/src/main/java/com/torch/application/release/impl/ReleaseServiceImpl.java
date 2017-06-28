@@ -70,8 +70,8 @@ public class ReleaseServiceImpl implements ReleaseService {
     BeanUtils.copyProperties(command, release);
     release.setCreateTime(new DateTime());
     release.setLastUpdateTime(new DateTime());
-    releaseRepository.save(release);
     release.setStatus(0);
+    releaseRepository.save(release);
     return release.getId();
   }
 

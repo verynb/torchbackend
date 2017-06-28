@@ -100,6 +100,19 @@ public class ReleaseResource {
   }
 
   @RoleCheck
+  @ApiOperation(value = "查询草稿的批次", notes = "", response = ReleaseDto.class, httpMethod = "GET")
+  @RequestMapping(path = "/release", method = GET)
+  @ResponseStatus(HttpStatus.OK)
+  public ReleaseDto addRelease() {
+    List<Release> releases = (List<Release>) releaseRepository
+        .findAll(QRelease.release.status.eq(0).or(QRelease.release.status.eq(1)));
+    return ReleaseDto.builder()
+        .releases(releases)
+        .codeMessage(new CodeMessage())
+        .build();
+  }
+
+  @RoleCheck
   @ApiOperation(value = "创建发布", notes = "", response = Long.class, httpMethod = "POST")
   @RequestMapping(path = "/release", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
@@ -171,7 +184,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(release, filteredStudent,auditItems));
+        resultList.add(toDto(release, filteredStudent, auditItems));
       });
     });
     return ReleaseListResultDto.builder()
@@ -184,7 +197,8 @@ public class ReleaseResource {
   @ApiOperation(value = "根据批次号查询发布", notes = "", httpMethod = "GET")
   @RequestMapping(path = "/release/{batchNo}", method = GET)
   public ReleaseListResultDto getRelease(@PathVariable("batchNo") String batch) {
-    List<Release> releases = (List<Release>) releaseRepository.findAll(QRelease.release.batchNo.eq(batch));
+    List<Release> releases = (List<Release>) releaseRepository
+        .findAll(QRelease.release.batchNo.eq(batch));
     if (CollectionUtils.isEmpty(releases)) {
       return ReleaseListResultDto.builder()
           .releaseList(Collections.EMPTY_LIST)
@@ -209,7 +223,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(release, filteredStudent,auditItems));
+        resultList.add(toDto(release, filteredStudent, auditItems));
       });
     });
     return ReleaseListResultDto.builder()
