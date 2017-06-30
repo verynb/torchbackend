@@ -49,6 +49,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,8 +107,8 @@ public class ReleaseResource {
   public ReleaseDto addRelease() {
     List<Release> releases = (List<Release>) releaseRepository
         .findAll(QRelease.release.status.eq(0).or(QRelease.release.status.eq(1)));
-    List<ReleaseBatch> resultList=Lists.newArrayList();
-    releases.forEach(re->{
+    List<ReleaseBatch> resultList = Lists.newArrayList();
+    releases.forEach(re -> {
       resultList.add(ReleaseBatch.builder()
           .id(re.getId())
           .batchNo(re.getBatchNo())
@@ -238,6 +239,43 @@ public class ReleaseResource {
         .codeMessage(new CodeMessage())
         .build();
   }
+
+
+  @RoleCheck
+  @ApiOperation(value = "根据批ID查询发布", notes = "", httpMethod = "GET")
+  @RequestMapping(path = "/release/id", method = GET)
+  public ReleaseListResultDto getRelease(Long id) {
+    Release release = releaseRepository.findOne(id);
+    if (Objects.isNull(release)) {
+      return ReleaseListResultDto.builder()
+          .releaseList(Collections.EMPTY_LIST)
+          .codeMessage(new CodeMessage())
+          .build();
+    }
+    List<Student> students = (List<Student>) studentRepository.findAll();
+    if (CollectionUtils.isEmpty(students)) {
+      return ReleaseListResultDto.builder()
+          .releaseList(Collections.EMPTY_LIST)
+          .codeMessage(new CodeMessage())
+          .build();
+    }
+    List<AuditItem> auditItems = (List<AuditItem>) auditItemRepository.findAll();
+    List<ReleaseListDto> resultList = Lists.newArrayList();
+    List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
+        .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
+    releaseStudents.forEach(releaseStudent -> {
+      Student filteredStudent = students.stream()
+          .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
+          .findFirst()
+          .orElse(null);
+      resultList.add(toDto(release, filteredStudent, auditItems));
+    });
+    return ReleaseListResultDto.builder()
+        .releaseList(resultList)
+        .codeMessage(new CodeMessage())
+        .build();
+  }
+
 
   private ReleaseListDto toDto(Release release, Student student, List<AuditItem> auditItems) {
     if (release == null || student == null) {

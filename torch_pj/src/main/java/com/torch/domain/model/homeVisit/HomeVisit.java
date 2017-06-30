@@ -57,5 +57,7 @@ public class HomeVisit extends IdEntity implements Serializable {
   //家访内容
   private String visitInfo;
 
+  private String homeVistor;
+
 
 }

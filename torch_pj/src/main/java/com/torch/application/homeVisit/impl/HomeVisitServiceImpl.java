@@ -12,10 +12,12 @@ import com.torch.domain.model.homeVisit.HomeVisitRepository;
 import com.torch.domain.model.release.ReleaseRepository;
 import com.torch.domain.model.release.ReleaseStudentRepository;
 import com.torch.domain.model.student.StudentRepository;
+import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
 import java.beans.Transient;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +52,9 @@ public class HomeVisitServiceImpl implements HomeVisitService {
         .studentId(command.getStudentId())
         .studentPhoto(buildPhtot(command.getStudentPhotos()))
         .visitInfo(command.getVisitInfo())
+        .homeVistor(Session.getUsername())
         .build();
+    homeVisit.setCreateTime(new DateTime());
     homeVisitRepository.save(homeVisit);
     command.getAuditItemIds().forEach(item -> {
       HomeVisitAuditItem newItem = HomeVisitAuditItem.builder()
