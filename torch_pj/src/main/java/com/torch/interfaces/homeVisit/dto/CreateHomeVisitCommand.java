@@ -53,6 +53,7 @@ public class CreateHomeVisitCommand {
 
   private Long homeVistorId;
 
-
+  @ApiModelProperty("家访时间")
+  private String homeVisitTime;
 
 }

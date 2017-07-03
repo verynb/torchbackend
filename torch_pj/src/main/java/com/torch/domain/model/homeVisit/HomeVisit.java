@@ -8,13 +8,16 @@ import com.torch.domain.model.common.IdEntity;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 
 /**
  * @author yj 2017-01-18 11:16:14
@@ -64,5 +67,104 @@ public class HomeVisit extends IdEntity implements Serializable {
 
   private Long homeVistorId;
 
+  @ApiModelProperty("家访时间")
+  private DateTime homeVisitTime;
 
+  public Long getBatchId() {
+    return batchId;
+  }
+
+  public void setBatchId(Long batchId) {
+    this.batchId = batchId;
+  }
+
+  public Long getStudentId() {
+    return studentId;
+  }
+
+  public void setStudentId(Long studentId) {
+    this.studentId = studentId;
+  }
+
+  public String getApplicationForm() {
+    return applicationForm;
+  }
+
+  public void setApplicationForm(String applicationForm) {
+    this.applicationForm = applicationForm;
+  }
+
+  public String getStudentPhoto() {
+    return studentPhoto;
+  }
+
+  public void setStudentPhoto(String studentPhoto) {
+    this.studentPhoto = studentPhoto;
+  }
+
+  public String getFamilyPhoto() {
+    return familyPhoto;
+  }
+
+  public void setFamilyPhoto(String familyPhoto) {
+    this.familyPhoto = familyPhoto;
+  }
+
+  public String getHomePhoto() {
+    return homePhoto;
+  }
+
+  public void setHomePhoto(String homePhoto) {
+    this.homePhoto = homePhoto;
+  }
+
+  public String getHomeFeaturePhoto() {
+    return homeFeaturePhoto;
+  }
+
+  public void setHomeFeaturePhoto(String homeFeaturePhoto) {
+    this.homeFeaturePhoto = homeFeaturePhoto;
+  }
+
+  public String getInteractivePhoto() {
+    return InteractivePhoto;
+  }
+
+  public void setInteractivePhoto(String interactivePhoto) {
+    InteractivePhoto = interactivePhoto;
+  }
+
+  public String getVisitInfo() {
+    return visitInfo;
+  }
+
+  public void setVisitInfo(String visitInfo) {
+    this.visitInfo = visitInfo;
+  }
+
+  public String getHomeVistor() {
+    return homeVistor;
+  }
+
+  public void setHomeVistor(String homeVistor) {
+    this.homeVistor = homeVistor;
+  }
+
+  public Long getHomeVistorId() {
+    return homeVistorId;
+  }
+
+  public void setHomeVistorId(Long homeVistorId) {
+    this.homeVistorId = homeVistorId;
+  }
+
+  public void setHomeVisitTime(DateTime homeVisitTime) {
+    this.homeVisitTime = homeVisitTime;
+  }
+
+  @Lob
+  @Column(columnDefinition="mediumblob")
+  public DateTime getHomeVisitTime() {
+    return homeVisitTime;
+  }
 }

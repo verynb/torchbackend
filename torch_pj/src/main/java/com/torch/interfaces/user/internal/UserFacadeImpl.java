@@ -122,7 +122,7 @@ public class UserFacadeImpl implements UserFacade {
         .findAll(QTeacherSchool.teacherSchool.techerId.eq(id));
     if (CollectionUtils.isNotEmpty(tss)) {
       tss.forEach(ts -> {
-        School school = schoolRepository.findOne(ts.getSchoolId());
+        School school = schoolRepository.findOne(ts.getSchoolId()==null?0l:ts.getSchoolId());
         if (school != null) {
           schools.add(school);
         }

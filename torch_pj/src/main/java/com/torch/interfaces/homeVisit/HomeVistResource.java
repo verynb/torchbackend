@@ -25,8 +25,10 @@ import com.torch.domain.model.homeVisit.QHomeVisit;
 import com.torch.domain.model.homeVisit.QHomeVisitAuditItem;
 import com.torch.domain.model.release.Release;
 import com.torch.domain.model.release.ReleaseRepository;
+import com.torch.domain.model.student.Student;
+import com.torch.domain.model.student.StudentRepository;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
-import com.torch.interfaces.common.facade.dto.ReturnDto;
+import com.torch.interfaces.common.facade.dto.ReturnIdDto;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
 import com.torch.interfaces.homeVisit.dto.AuditChoiced;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
@@ -75,6 +77,9 @@ public class HomeVistResource {
   private final PhotoPath photoPath;
 
   @Autowired
+  private StudentRepository studentRepository;
+
+  @Autowired
   public HomeVistResource(final HomeVisitRepository homeVistRepository,
       final HomeVisitAuditItemRepository homeVistAuditItemRepository,
       final HomeVisitService homeVisitService,
@@ -98,7 +103,7 @@ public class HomeVistResource {
   @ApiOperation(value = "保存家访内容", notes = "", response = Long.class, httpMethod = "POST")
   @RequestMapping(path = "/homeVisit", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
-  public ReturnDto addRelease(@Valid @RequestBody CreateHomeVisitCommand command) {
+  public ReturnIdDto addRelease(@Valid @RequestBody CreateHomeVisitCommand command) {
     command.setApplicationForms(uploadVistPhoto(command.getApplicationForms()));
     command.setFamilyPhotos(uploadVistPhoto(command.getFamilyPhotos()));
     command.setHomePhotos(uploadVistPhoto(command.getHomePhotos()));
@@ -106,8 +111,9 @@ public class HomeVistResource {
     command.setStudentPhotos(uploadVistPhoto(command.getStudentPhotos()));
     command.setHomeFeaturePhotos(uploadVistPhoto(command.getHomeFeaturePhotos()));
     homeVisitService.saveHomeVisit(command);
-    return ReturnDto.builder()
+    return ReturnIdDto.builder()
         .codeMessage(new CodeMessage())
+        .id(command.getStudentId())
         .build();
   }
 
@@ -135,7 +141,7 @@ public class HomeVistResource {
       homeVisitListDtos.add(HomeVisitListDto.builder()
           .homeVisitId(homeVisit.getId())
           .homeVisitor(homeVisit.getHomeVistor())
-          .homeVisitTime(homeVisit.getCreateTime().toString("YYYY-MM-DD"))
+          .homeVisitTime(homeVisit.getHomeVisitTime().toString("YYYY-MM-DD"))
           .build());
     });
     return HomeList.builder()
@@ -156,6 +162,7 @@ public class HomeVistResource {
           .codeMessage(new CodeMessage())
           .build();
     }
+    Student student=studentRepository.findOne(homevisit.getStudentId()==null?0l:homevisit.getStudentId());
     List<AuditChoiced> auditChoiceds = Lists.newArrayList();
 
     Release release = releaseRepository.findOne(homevisit.getBatchId());
@@ -177,6 +184,9 @@ public class HomeVistResource {
     });
     return HomeVisitDetail.builder()
         .codeMessage(new CodeMessage())
+        .studentName(student==null?"":student.getName())
+        .homeVisitTime(homevisit.getHomeVisitTime()==null?"":homevisit.getHomeVisitTime().toString("yyyy-MM-dd HH:mm:ss"))
+        .createTime(homevisit.getCreateTime()==null?"":homevisit.getCreateTime().toString("yyyy-MM-dd HH:mm:ss"))
         .applicationForms(buildPhoto(homevisit.getApplicationForm()))
         .auditChoiceds(auditChoiceds)
         .familyPhotos(buildPhoto(homevisit.getFamilyPhoto()))

@@ -15,8 +15,11 @@ import com.torch.domain.model.student.StudentRepository;
 import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
 import java.beans.Transient;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +59,13 @@ public class HomeVisitServiceImpl implements HomeVisitService {
         .homeVistor(command.getHomeVistor())
         .homeVistorId(command.getHomeVistorId())
         .build();
+    if (StringUtils.isNotBlank(command.getHomeVisitTime())) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      try {
+        homeVisit.setHomeVisitTime(new DateTime(sdf.parse(command.getHomeVisitTime()).getTime()));
+      } catch (ParseException e) {
+      }
+    }
     homeVisit.setCreateTime(new DateTime());
     homeVisitRepository.save(homeVisit);
     command.getAuditItemIds().forEach(item -> {

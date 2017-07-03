@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
+import org.joda.time.DateTime;
 
 /**
  * Created by yuanj on 2017/6/30.
@@ -49,5 +50,10 @@ public class HomeVisitDetail {
   @ApiModelProperty("审核项title已经答案")
   private List<AuditChoiced> auditChoiceds;
 
+  private String studentName;
 
+  @ApiModelProperty("家访时间")
+  private String homeVisitTime;
+  @ApiModelProperty("家访录入时间")
+  private String createTime;
 }
