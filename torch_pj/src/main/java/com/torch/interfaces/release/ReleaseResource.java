@@ -24,6 +24,7 @@ import com.torch.domain.model.release.Release;
 import com.torch.domain.model.release.ReleaseRepository;
 import com.torch.domain.model.release.ReleaseStudent;
 import com.torch.domain.model.release.ReleaseStudentRepository;
+import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
 import com.torch.domain.model.user.DictVolunteerRole;
@@ -85,19 +86,23 @@ public class ReleaseResource {
 
   private final AuditItemRepository auditItemRepository;
 
+  private final SchoolRepository schoolRepository;
+
   @Autowired
   public ReleaseResource(final ReleaseService releaseService,
       final ReleaseRepository releaseRepository,
       final ReleaseStudentRepository releaseStudentRepository,
       final StudentRepository studentRepository,
       final HomeVisitAuditItemRepository homeVisitAuditItemRepository,
-      final AuditItemRepository auditItemRepository) {
+      final AuditItemRepository auditItemRepository,
+      final SchoolRepository schoolRepository) {
     this.releaseService = releaseService;
     this.releaseRepository = releaseRepository;
     this.releaseStudentRepository = releaseStudentRepository;
     this.studentRepository = studentRepository;
     this.homeVisitAuditItemRepository = homeVisitAuditItemRepository;
     this.auditItemRepository = auditItemRepository;
+    this.schoolRepository = schoolRepository;
   }
 
   @RoleCheck
@@ -286,11 +291,22 @@ public class ReleaseResource {
         .city(release.getCity())
         .createTime(release.getCreateTime().getMillis())
         .grade(student.getGrade())
+        .gradeCode(student.getGradeCode())
         .province(release.getProvince())
         .releaseId(release.getId())
         .studentId(student.getId())
         .scores(buildScores(release.getId(), student.getId(), auditItems))
         .studentName(student.getName())
+        .address(student.getAddress())
+        .age(student.getAge())
+        .area(student.getArea())
+        .birthday(student.getBirthday())
+        .sCity(student.getCity())
+        .sProvince(student.getProvince())
+        .gender(student.getGender())
+        .identityCard(student.getIdentityCard())
+        .schoolName(schoolRepository.findOne(student.getSchoolId()) == null ? ""
+            : schoolRepository.findOne(student.getSchoolId()).getSchoolName())
         .build();
   }
 

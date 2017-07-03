@@ -85,6 +85,8 @@ public class UpdateStudentCommand {
   //年级
   @ApiModelProperty(name = "年级", required = true, position = 12)
   private String grade;
+
+  private String gradeCode;
   //当前资助人
  /* @ApiModelProperty(name = "当前资助人ID", required = true, position = 13)
   private Long sponsorId;*/

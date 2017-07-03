@@ -35,6 +35,9 @@ public class HomeVisitDetail {
   @ApiModelProperty("家庭环境")
   private List<String> homePhotos;
 
+  @ApiModelProperty("家庭环境特写")
+  private List<String> homeFeaturePhoto;
+
   //互动照片
   @ApiModelProperty("互动照片")
   private List<String> InteractivePhotos;

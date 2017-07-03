@@ -7,6 +7,7 @@ package com.torch.domain.model.homeVisit;
 import com.torch.domain.model.common.IdEntity;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -51,6 +52,8 @@ public class HomeVisit extends IdEntity implements Serializable {
   //家庭环境
   private String homePhoto;
 
+  private String homeFeaturePhoto;
+
   //互动照片
   private String InteractivePhoto;
 
@@ -58,6 +61,8 @@ public class HomeVisit extends IdEntity implements Serializable {
   private String visitInfo;
 
   private String homeVistor;
+
+  private Long homeVistorId;
 
 
 }

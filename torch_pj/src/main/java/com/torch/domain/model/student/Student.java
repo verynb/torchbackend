@@ -67,6 +67,8 @@ public class Student extends IdEntity implements Serializable {
   private Long schoolId;
   //年级
   private String grade;
+
+  private String gradeCode;
   //当前资助人
   private Long sponsorId;
 

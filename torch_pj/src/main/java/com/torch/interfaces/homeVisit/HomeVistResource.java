@@ -11,6 +11,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import com.google.common.collect.Lists;
 import com.torch.application.homeVisit.HomeVisitService;
+import com.torch.application.upload.ImageUploadService;
+import com.torch.application.upload.PhotoPath;
 import com.torch.domain.model.audit.Audit;
 import com.torch.domain.model.audit.AuditItem;
 import com.torch.domain.model.audit.AuditItemRepository;
@@ -37,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,13 +70,19 @@ public class HomeVistResource {
 
   private final ReleaseRepository releaseRepository;
 
+  private final ImageUploadService imageUploadService;
+
+  private final PhotoPath photoPath;
+
   @Autowired
   public HomeVistResource(final HomeVisitRepository homeVistRepository,
       final HomeVisitAuditItemRepository homeVistAuditItemRepository,
       final HomeVisitService homeVisitService,
       final AuditRepository auditRepository,
       final AuditItemRepository auditItemRepository,
-      final ReleaseRepository releaseRepository
+      final ReleaseRepository releaseRepository,
+      final ImageUploadService imageUploadService,
+      final PhotoPath photoPath
   ) {
     this.homeVistRepository = homeVistRepository;
     this.homeVistAuditItemRepository = homeVistAuditItemRepository;
@@ -81,6 +90,8 @@ public class HomeVistResource {
     this.auditRepository = auditRepository;
     this.auditItemRepository = auditItemRepository;
     this.releaseRepository = releaseRepository;
+    this.imageUploadService = imageUploadService;
+    this.photoPath = photoPath;
   }
 
   @RoleCheck
@@ -88,10 +99,27 @@ public class HomeVistResource {
   @RequestMapping(path = "/homeVisit", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
   public ReturnDto addRelease(@Valid @RequestBody CreateHomeVisitCommand command) {
+    command.setApplicationForms(uploadVistPhoto(command.getApplicationForms()));
+    command.setFamilyPhotos(uploadVistPhoto(command.getFamilyPhotos()));
+    command.setHomePhotos(uploadVistPhoto(command.getHomePhotos()));
+    command.setInteractivePhotos(uploadVistPhoto(command.getInteractivePhotos()));
+    command.setStudentPhotos(uploadVistPhoto(command.getStudentPhotos()));
+    command.setHomeFeaturePhotos(uploadVistPhoto(command.getHomeFeaturePhotos()));
     homeVisitService.saveHomeVisit(command);
     return ReturnDto.builder()
         .codeMessage(new CodeMessage())
         .build();
+  }
+
+  private List<String> uploadVistPhoto(List<String> photos) {
+    List<String> applicationForms = Lists.newArrayList();
+    if (CollectionUtils.isNotEmpty(photos)) {
+      photos.forEach(str -> {
+        String path = imageUploadService.GenerateImage(str, photoPath.getVisit());
+        applicationForms.add(path);
+      });
+    }
+    return applicationForms;
   }
 
   @RoleCheck
@@ -137,7 +165,8 @@ public class HomeVistResource {
         .findAll(QHomeVisitAuditItem.homeVisitAuditItem.homeVisitId.eq(id));
     visitAuditItems.forEach(visitAuditItem -> {
       AuditItem auditItem = auditItemRepository.findOne(visitAuditItem.getAuditItemId());
-      Optional<Audit> op = audits.stream().filter(audit -> audit.getId().equals(auditItem.getAuditId()))
+      Optional<Audit> op = audits.stream()
+          .filter(audit -> audit.getId().equals(auditItem.getAuditId()))
           .findFirst();
       if (op.isPresent()) {
         auditChoiceds.add(AuditChoiced.builder()
@@ -154,8 +183,9 @@ public class HomeVistResource {
         .homePhotos(buildPhoto(homevisit.getHomePhoto()))
         .InteractivePhotos(buildPhoto(homevisit.getInteractivePhoto()))
         .studentPhotos(buildPhoto(homevisit.getStudentPhoto()))
+        .homeFeaturePhoto(buildPhoto(homevisit.getHomeFeaturePhoto()))
         .visitInfo(homevisit.getVisitInfo())
-        .batchNo(release==null?"":release.getBatchNo())
+        .batchNo(release == null ? "" : release.getBatchNo())
         .build();
   }
 

@@ -48,11 +48,13 @@ public class HomeVisitServiceImpl implements HomeVisitService {
         .applicationForm(buildPhtot(command.getApplicationForms()))
         .familyPhoto(buildPhtot(command.getFamilyPhotos()))
         .homePhoto(buildPhtot(command.getHomePhotos()))
+        .homeFeaturePhoto(buildPhtot(command.getHomeFeaturePhotos()))
         .InteractivePhoto(buildPhtot(command.getInteractivePhotos()))
         .studentId(command.getStudentId())
         .studentPhoto(buildPhtot(command.getStudentPhotos()))
         .visitInfo(command.getVisitInfo())
-        .homeVistor(Session.getUsername())
+        .homeVistor(command.getHomeVistor())
+        .homeVistorId(command.getHomeVistorId())
         .build();
     homeVisit.setCreateTime(new DateTime());
     homeVisitRepository.save(homeVisit);

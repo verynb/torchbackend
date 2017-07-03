@@ -35,6 +35,9 @@ public class CreateHomeVisitCommand {
   @ApiModelProperty(value = "家庭环境图片,一张或多张", required = false)
   private List<String> homePhotos;
 
+  @ApiModelProperty(value = "家庭特写环境图片,一张或多张", required = false)
+  private List<String>homeFeaturePhotos;
+
   //互动照片
   @ApiModelProperty(value = "互动照片图片,一张或多张", required = false)
   private List<String> InteractivePhotos;
@@ -45,5 +48,11 @@ public class CreateHomeVisitCommand {
 
   @ApiModelProperty(value = "审核标准IDS", required = false)
   private List<Long> auditItemIds;
+
+  private String homeVistor;
+
+  private Long homeVistorId;
+
+
 
 }

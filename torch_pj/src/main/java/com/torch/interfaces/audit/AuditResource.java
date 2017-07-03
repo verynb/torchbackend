@@ -75,7 +75,7 @@ public class AuditResource {
           .build();
       auditItems.forEach(item -> {
         AuditItemDto itemDto = AuditItemDto.builder()
-            .auditId(item.getAuditId())
+            .auditItemId(item.getId())
             .options(item.getOptions())
             .scores(item.getScores())
             .build();

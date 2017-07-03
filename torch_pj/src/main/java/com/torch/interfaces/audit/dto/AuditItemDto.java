@@ -16,7 +16,7 @@ public class AuditItemDto {
   /**
    * 审核项ID
    */
-  private Long auditId;
+  private Long auditItemId;
   /**
    *选择项
    */
