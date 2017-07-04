@@ -76,6 +76,7 @@ public class HomeVistResource {
 
   private final PhotoPath photoPath;
 
+  private final String SERVER_PREFIX = "116.62.208.39";
   @Autowired
   private StudentRepository studentRepository;
 
@@ -99,7 +100,7 @@ public class HomeVistResource {
     this.photoPath = photoPath;
   }
 
-  @RoleCheck
+//  @RoleCheck
   @ApiOperation(value = "保存家访内容", notes = "", response = Long.class, httpMethod = "POST")
   @RequestMapping(path = "/homeVisit", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
@@ -122,7 +123,7 @@ public class HomeVistResource {
     if (CollectionUtils.isNotEmpty(photos)) {
       photos.forEach(str -> {
         String path = imageUploadService.GenerateImage(str, photoPath.getVisit());
-        applicationForms.add(path);
+        applicationForms.add(SERVER_PREFIX+path);
       });
     }
     return applicationForms;
@@ -141,7 +142,7 @@ public class HomeVistResource {
       homeVisitListDtos.add(HomeVisitListDto.builder()
           .homeVisitId(homeVisit.getId())
           .homeVisitor(homeVisit.getHomeVistor())
-          .homeVisitTime(homeVisit.getHomeVisitTime().toString("YYYY-MM-DD"))
+          .homeVisitTime(homeVisit.getHomeVisitTime().toString("yyyy-MM-dd"))
           .build());
     });
     return HomeList.builder()
