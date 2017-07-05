@@ -109,7 +109,7 @@ public class StudentResource {
       @ApiParam(value = "分页条数") @RequestParam(required = false) Integer pageSize,
       @ApiParam(value = "当前页") @RequestParam(required = false) Integer currentPage,
       @ApiParam(value = "省") @RequestParam(required = false) String province,
-      @ApiParam(value = "省") @RequestParam(required = false) String city
+      @ApiParam(value = "市") @RequestParam(required = false) String city
   ) {
     return StudentListDto.builder()
         .studentLists(studentService.getAllStudents(pageSize, currentPage, province, city))
