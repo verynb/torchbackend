@@ -40,6 +40,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -136,12 +137,19 @@ public class HomeVistResource {
 
     List<HomeVisit> homevisits = (List<HomeVisit>) homeVistRepository
         .findAll(QHomeVisit.homeVisit.studentId.eq(studentId));
+
+    homevisits = homevisits.stream()
+        .filter(homeVisit -> homeVisit.getHomeVisitTime() != null)
+        .sorted((visit1, visit2) ->
+            visit1.getHomeVisitTime().compareTo(visit2.getHomeVisitTime())
+        ).collect(Collectors.toList());
     List<HomeVisitListDto> homeVisitListDtos = Lists.newArrayList();
     homevisits.forEach(homeVisit -> {
       homeVisitListDtos.add(HomeVisitListDto.builder()
           .homeVisitId(homeVisit.getId())
           .homeVisitor(homeVisit.getHomeVistor())
-          .homeVisitTime(homeVisit.getHomeVisitTime().toString("YYYY-MM-DD"))
+          .homeVisitTime(
+              homeVisit.getHomeVisitTime() == null ? "" : homeVisit.getHomeVisitTime().toString("YYYY-MM-DD"))
           .build());
     });
     return HomeList.builder()
@@ -162,7 +170,7 @@ public class HomeVistResource {
           .codeMessage(new CodeMessage())
           .build();
     }
-    Student student=studentRepository.findOne(homevisit.getStudentId()==null?0l:homevisit.getStudentId());
+    Student student = studentRepository.findOne(homevisit.getStudentId() == null ? 0l : homevisit.getStudentId());
     List<AuditChoiced> auditChoiceds = Lists.newArrayList();
 
     Release release = releaseRepository.findOne(homevisit.getBatchId());
@@ -184,9 +192,10 @@ public class HomeVistResource {
     });
     return HomeVisitDetail.builder()
         .codeMessage(new CodeMessage())
-        .studentName(student==null?"":student.getName())
-        .homeVisitTime(homevisit.getHomeVisitTime()==null?"":homevisit.getHomeVisitTime().toString("yyyy-MM-dd HH:mm:ss"))
-        .createTime(homevisit.getCreateTime()==null?"":homevisit.getCreateTime().toString("yyyy-MM-dd HH:mm:ss"))
+        .studentName(student == null ? "" : student.getName())
+        .homeVisitTime(
+            homevisit.getHomeVisitTime() == null ? "" : homevisit.getHomeVisitTime().toString("yyyy-MM-dd HH:mm:ss"))
+        .createTime(homevisit.getCreateTime() == null ? "" : homevisit.getCreateTime().toString("yyyy-MM-dd HH:mm:ss"))
         .applicationForms(buildPhoto(homevisit.getApplicationForm()))
         .auditChoiceds(auditChoiceds)
         .familyPhotos(buildPhoto(homevisit.getFamilyPhoto()))

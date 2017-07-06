@@ -167,4 +167,5 @@ public class HomeVisit extends IdEntity implements Serializable {
   public DateTime getHomeVisitTime() {
     return homeVisitTime;
   }
+
 }
