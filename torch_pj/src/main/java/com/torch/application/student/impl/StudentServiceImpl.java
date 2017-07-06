@@ -91,7 +91,7 @@ public class StudentServiceImpl implements StudentService {
     if (pageSize != null && pageSize != 0 && currentPage != null && currentPage != 0) {
       pageable = new PageRequest(currentPage, pageSize);
     }
-    BooleanBuilder conditions = new BooleanBuilder();
+    BooleanBuilder conditions = new BooleanBuilder(QStudent.student.status.eq(0));
     if (StringUtils.isNotBlank(province)) {
       conditions.and(QStudent.student.province.eq(province));
     }

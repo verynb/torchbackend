@@ -38,7 +38,7 @@ public class AddReleaseStudentCommand {
   /**
    * 所需金额
    */
-  @NotNull
+//  @NotNull
   @ApiModelProperty(name = "所需金额", required = true, position = 3)
   private Double needMoney;
 
