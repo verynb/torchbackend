@@ -9,10 +9,15 @@ import lombok.Data;
 @Data
 @Builder
 public class ReleaseBatch {
+
   private Long id;
   /**
    * 批次
    */
   private String batchNo;
+
+  private String province;
+
+  private String city;
 
 }

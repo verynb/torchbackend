@@ -23,6 +23,8 @@ public class ReleaseListDto {
   @ApiModelProperty(name = "市", required = true, position = 5)
   private String city;
 
+  @ApiModelProperty(name = "发布学生关系ID", required = true, position = 6)
+  private Long releaseStudentId;
   @ApiModelProperty(name = "学生ID", required = true, position = 6)
   private Long studentId;
   @ApiModelProperty(name = "学生姓名", required = true, position = 7)

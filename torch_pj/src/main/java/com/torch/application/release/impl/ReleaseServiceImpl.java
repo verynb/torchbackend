@@ -20,6 +20,7 @@ import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
+import com.torch.interfaces.release.ReleaseStudentDto;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
 import com.torch.util.cache.RedisUtils;
@@ -116,13 +117,14 @@ public class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transient
-  public void release(Long batchId, List<Long> releaseStudentIds) {
+  public void release(Long batchId, List<ReleaseStudentDto> releaseStudentIds) {
     releaseStudentIds.forEach(id -> {
-      ReleaseStudent releaseStudent = releaseStudentRepository.findOne(id);
+      ReleaseStudent releaseStudent = releaseStudentRepository.findOne(id.getReleaseStudentId());
       if (releaseStudent != null) {
-        if (releaseStudent.getNeedMoney() <= 0) {
+        if (id.getNeedMoney() <= 0) {
           throw new TorchException("请确认好发布学生所需金额");
         }
+        releaseStudent.setNeedMoney(id.getNeedMoney());
         releaseStudent.setStatus(4);
         releaseStudentRepository.save(releaseStudent);
         Student student = studentRepository.findOne(releaseStudent.getStudentId());

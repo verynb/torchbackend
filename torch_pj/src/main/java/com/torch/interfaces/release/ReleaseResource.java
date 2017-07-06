@@ -117,6 +117,8 @@ public class ReleaseResource {
       resultList.add(ReleaseBatch.builder()
           .id(re.getId())
           .batchNo(re.getBatchNo())
+          .city(re.getCity())
+          .province(re.getProvince())
           .build());
     });
     return ReleaseDto.builder()
@@ -162,7 +164,7 @@ public class ReleaseResource {
   @ApiOperation(value = "发布批次", notes = "", httpMethod = "PUT")
   @RequestMapping(path = "/release/{batchId}", method = PUT)
   public ReturnDto release(@PathVariable("batchId") Long batchId,
-      @ApiParam(value = "发布项学生IDS") @RequestBody List<Long> releaseStudentIds) {
+      @ApiParam(value = "发布项学生IDS") @RequestBody List<ReleaseStudentDto> releaseStudentIds) {
     releaseService.release(batchId, releaseStudentIds);
     return ReturnDto.builder()
         .codeMessage(new CodeMessage())
@@ -197,7 +199,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(release, filteredStudent, auditItems));
+        resultList.add(toDto(releaseStudent.getId(),release, filteredStudent, auditItems));
       });
     });
     return ReleaseListResultDto.builder()
@@ -236,7 +238,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(release, filteredStudent, auditItems));
+        resultList.add(toDto(releaseStudent.getId(),release, filteredStudent, auditItems));
       });
     });
     return ReleaseListResultDto.builder()
@@ -273,7 +275,7 @@ public class ReleaseResource {
           .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
           .findFirst()
           .orElse(null);
-      resultList.add(toDto(release, filteredStudent, auditItems));
+      resultList.add(toDto(releaseStudent.getId(),release, filteredStudent, auditItems));
     });
     return ReleaseListResultDto.builder()
         .releaseList(resultList)
@@ -282,7 +284,7 @@ public class ReleaseResource {
   }
 
 
-  private ReleaseListDto toDto(Release release, Student student, List<AuditItem> auditItems) {
+  private ReleaseListDto toDto(Long releaseStudentId,Release release, Student student, List<AuditItem> auditItems) {
     if (release == null || student == null) {
       return ReleaseListDto.builder().build();
     }

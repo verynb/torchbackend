@@ -7,6 +7,7 @@ package com.torch.application.release;
 import com.torch.domain.model.school.School;
 import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
+import com.torch.interfaces.release.ReleaseStudentDto;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
 import java.util.List;
@@ -23,6 +24,6 @@ public interface ReleaseService {
 
   void deleteReleaseStudent(Long id);
 
-  void release(Long batchId, List<Long> releaseStudentIds);
+  void release(Long batchId, List<ReleaseStudentDto> releaseStudentIds);
 
 }

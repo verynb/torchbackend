@@ -35,11 +35,5 @@ public class AddReleaseStudentCommand {
   @ApiModelProperty(name = "学生ID", required = true, position = 2)
   private Long studentId;
 
-  /**
-   * 所需金额
-   */
-//  @NotNull
-  @ApiModelProperty(name = "所需金额", required = true, position = 3)
-  private Double needMoney;
 
 }
