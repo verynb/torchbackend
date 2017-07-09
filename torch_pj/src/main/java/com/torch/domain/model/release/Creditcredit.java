@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
  * @version 1.0
  */
 @Entity
-@Table(name = "release_info")
+@Table(name = "creditcredit")
 @Data
 @Builder
 @NoArgsConstructor

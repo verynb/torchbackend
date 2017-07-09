@@ -10,6 +10,8 @@ import com.torch.application.contribute.ContributeService;
 import com.torch.application.homeVisit.HomeVisitService;
 import com.torch.domain.model.contribute.ContributeRecord;
 import com.torch.domain.model.contribute.ContributeRecordRepository;
+import com.torch.domain.model.contribute.Remittance;
+import com.torch.domain.model.contribute.RemittanceRepository;
 import com.torch.domain.model.homeVisit.HomeVisit;
 import com.torch.domain.model.homeVisit.HomeVisitAuditItem;
 import com.torch.domain.model.homeVisit.HomeVisitAuditItemRepository;
@@ -20,6 +22,7 @@ import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.security.Session;
+import com.torch.interfaces.contribute.dto.CreateRemittanceDto;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
 import com.torch.util.cache.RedisUtils;
 import java.beans.Transient;
@@ -48,16 +51,20 @@ public class ContributeServiceImpl implements ContributeService {
 
   private final ReleaseRepository releaseRepository;
 
+  private final RemittanceRepository remittanceRepository;
+
 
   @Autowired
   public ContributeServiceImpl(final RedisUtils redisUtils,
       final ContributeRecordRepository contributeRecordRepository,
       final StudentRepository studentRepository,
-      final ReleaseRepository releaseRepository) {
+      final ReleaseRepository releaseRepository,
+      final RemittanceRepository remittanceRepository) {
     this.redisUtils = redisUtils;
     this.contributeRecordRepository = contributeRecordRepository;
     this.studentRepository = studentRepository;
     this.releaseRepository = releaseRepository;
+    this.remittanceRepository = remittanceRepository;
   }
 
   /**
@@ -87,11 +94,24 @@ public class ContributeServiceImpl implements ContributeService {
       contributeMap = null;
       //更新发布状态
       Release release = releaseRepository.findOne(batchId);
-      if(release!=null){
+      if (release != null) {
         release.setStatus(4);
         releaseRepository.save(release);
       }
     }
+  }
+
+  @Override
+  @Transient
+  public void createRemittance(CreateRemittanceDto dto) {
+    Remittance remittance = Remittance.builder()
+        .contributeId(dto.getContributeId())
+        .remittanceMoney(dto.getRemittanceMoney())
+        .remittanceTime(new DateTime())
+        .studentId(dto.getStudentId())
+        .remark(dto.getRemark())
+        .build();
+    remittanceRepository.save(remittance);
   }
 
   private boolean isContributed() {
