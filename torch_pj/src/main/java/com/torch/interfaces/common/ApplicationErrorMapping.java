@@ -25,7 +25,7 @@ public class ApplicationErrorMapping {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationErrorMapping.class);
 
   @ExceptionHandler(UnAuthorizedException.class)
-  @ResponseStatus(UNAUTHORIZED)
+  @ResponseStatus(OK)
   @ResponseBody
   public ApplicationError unAuthorizedException(UnAuthorizedException e) {
     return applicationError("failed", "用户名或密码错误");
