@@ -6,6 +6,11 @@ package com.torch.application.release.impl;
 
 import com.torch.application.release.ReleaseService;
 import com.torch.application.school.SchoolService;
+import com.torch.domain.model.homeVisit.HomeVisit;
+import com.torch.domain.model.homeVisit.HomeVisitRepository;
+import com.torch.domain.model.homeVisit.QHomeVisit;
+import com.torch.domain.model.release.CreditRepository;
+import com.torch.domain.model.release.Creditcredit;
 import com.torch.domain.model.release.QRelease;
 import com.torch.domain.model.release.QReleaseStudent;
 import com.torch.domain.model.release.Release;
@@ -20,6 +25,7 @@ import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
+import com.torch.interfaces.release.CreateCreditDto;
 import com.torch.interfaces.release.ReleaseStudentDto;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
@@ -50,15 +56,23 @@ public class ReleaseServiceImpl implements ReleaseService {
 
   private final RedisUtils redisUtils;
 
+  private final HomeVisitRepository homeVisitRepository;
+
+  private final CreditRepository creditRepository;
+
   @Autowired
   public ReleaseServiceImpl(final ReleaseRepository releaseRepository,
       final ReleaseStudentRepository releaseStudentRepository,
       final StudentRepository studentRepository,
-      final RedisUtils redisUtils) {
+      final RedisUtils redisUtils,
+      final HomeVisitRepository homeVisitRepository,
+      final CreditRepository creditRepository) {
     this.releaseRepository = releaseRepository;
     this.releaseStudentRepository = releaseStudentRepository;
     this.studentRepository = studentRepository;
     this.redisUtils = redisUtils;
+    this.homeVisitRepository = homeVisitRepository;
+    this.creditRepository = creditRepository;
   }
 
   @Override
@@ -118,11 +132,17 @@ public class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transient
   public void release(Long batchId, List<ReleaseStudentDto> releaseStudentIds) {
+
     releaseStudentIds.forEach(id -> {
       ReleaseStudent releaseStudent = releaseStudentRepository.findOne(id.getReleaseStudentId());
       if (releaseStudent != null) {
         if (id.getNeedMoney() <= 0) {
           throw new TorchException("请确认好发布学生所需金额");
+        }
+        Long count = homeVisitRepository.count(QHomeVisit.homeVisit.batchId.eq(batchId)
+            .and(QHomeVisit.homeVisit.studentId.eq(releaseStudent.getStudentId())));
+        if (count <= 0) {
+          throw new TorchException("请确认好发布学生是否做过家纺");
         }
         releaseStudent.setNeedMoney(id.getNeedMoney());
         releaseStudent.setStatus(4);
@@ -145,7 +165,18 @@ public class ReleaseServiceImpl implements ReleaseService {
       rss.forEach(rs -> {
         map.put(rs.getStudentId().toString(), "0");
       });
-      redisUtils.putMap(batchId.toString(),map);
+      redisUtils.putMap(batchId.toString(), map);
     }
+  }
+
+  @Override
+  @Transient
+  public void createCredit(CreateCreditDto dto) {
+    Creditcredit creditcre = Creditcredit.builder()
+        .creditTime(dto.toDatetime())
+        .money(dto.getMoney())
+        .sponsorId(dto.getSponsorId())
+        .build();
+    creditRepository.save(creditcre);
   }
 }

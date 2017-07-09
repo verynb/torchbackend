@@ -34,6 +34,8 @@ public class ReleaseListDto {
 
   private String gradeCode;
 
+  private double needMoney;
+
   @ApiModelProperty(name = "性别", required = true, position = 8)
   private String gender;
 

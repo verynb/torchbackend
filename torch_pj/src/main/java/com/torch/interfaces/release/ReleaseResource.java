@@ -289,6 +289,7 @@ public class ReleaseResource {
       return ReleaseListDto.builder().build();
     }
     return ReleaseListDto.builder()
+        .releaseStudentId(releaseStudentId)
         .batchNo(release.getBatchNo())
         .city(release.getCity())
         .createTime(release.getCreateTime().getMillis())
@@ -330,5 +331,16 @@ public class ReleaseResource {
       }
     }
     return scores;
+  }
+
+  @RoleCheck
+  @ApiOperation(value = "放款录入", notes = "", httpMethod = "POST")
+  @RequestMapping(path = "/release/credit", method = POST)
+  @ResponseStatus(HttpStatus.OK)
+  public ReturnDto credit(@RequestBody CreateCreditDto dto) {
+    releaseService.createCredit(dto);
+    return ReturnDto.builder()
+        .codeMessage(new CodeMessage())
+        .build();
   }
 }

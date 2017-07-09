@@ -13,7 +13,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Data
 public class StudentSearchDto {
-
+  private Integer pageSize;
+  private Integer currentPage;
   @ApiModelProperty(name = "学生姓名", required = true, position = 1)
   private String name;
   @ApiModelProperty(name = "身份证", required = true, position = 2)

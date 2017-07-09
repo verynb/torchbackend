@@ -11,13 +11,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.torch.application.school.SchoolService;
 import com.torch.application.student.StudentService;
+import com.torch.domain.model.release.CreditRepository;
+import com.torch.domain.model.release.Creditcredit;
 import com.torch.domain.model.school.QSchool;
 import com.torch.domain.model.school.School;
 import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
+import com.torch.domain.model.user.User;
+import com.torch.domain.model.user.UserRepository;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ResultDTO;
 import com.torch.interfaces.common.facade.dto.ReturnDto;
@@ -28,7 +34,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,11 +63,19 @@ public class StudentResource {
 
   private final StudentRepository studentRepository;
 
+  private final CreditRepository creditRepository;
+
+  private final UserRepository userRepository;
+
   @Autowired
   public StudentResource(final StudentService studentService,
-      final StudentRepository studentRepository) {
+      final StudentRepository studentRepository,
+      final CreditRepository creditRepository,
+      final UserRepository userRepository) {
     this.studentService = studentService;
     this.studentRepository = studentRepository;
+    this.creditRepository = creditRepository;
+    this.userRepository = userRepository;
   }
 
   @RoleCheck
@@ -118,15 +135,56 @@ public class StudentResource {
   }
 
   @RoleCheck
-  @ApiOperation(value = "根据条件赛选学生列表，条件不传查询全部", notes = "", response = StudentDetailDto.class, httpMethod = "GET")
-  @RequestMapping(path = "/students/filter", method = GET)
+  @ApiOperation(value = "根据条件赛选学生列表，条件不传查询全部", notes = "", response = StudentDetailDto.class, httpMethod = "POST")
+  @RequestMapping(path = "/students/filter", method = POST)
   public StudentListDto filterStudents(
-      @ApiParam(value = "分页条数") @RequestParam(required = false, defaultValue = "15") Integer pageSize,
-      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage,
       @ApiParam(value = "查询条件") @RequestBody StudentSearchDto dto) {
     return StudentListDto.builder()
-        .studentLists(studentService.filterStudents(pageSize, currentPage, dto))
+        .studentLists(studentService.filterStudents(dto.getPageSize(), dto.getCurrentPage(), dto))
         .codeMessage(new CodeMessage())
         .build();
+  }
+
+  @RoleCheck
+  @ApiOperation(value = "根据学生ID查询受助记录", notes = "", response = CreditRecordListDto.class, httpMethod = "GET")
+  @RequestMapping(path = "/students/credits/{studentId}", method = GET)
+  public CreditRecordListDto getCredits(@PathVariable("studentId") long studentId) {
+    CreditRecordListDto dto = CreditRecordListDto.builder()
+        .codeMessage(new CodeMessage())
+        .recordDtos(Lists.newArrayList())
+        .build();
+    List<Creditcredit> creditcredits = creditRepository.findByStudentId(studentId);
+    if (CollectionUtils.isEmpty(creditcredits)) {
+      return dto;
+    }
+    Map<Long, Creditcredit> map = Maps.newHashMap();
+    creditcredits.forEach(creditcredit -> {
+      if (creditcredit == null || creditcredit.getSponsorId() == null) {
+        return;
+      }
+      if (!map.containsKey(creditcredit.getSponsorId())) {
+        map.put(creditcredit.getSponsorId(), creditcredit);
+      }
+    });
+    for (Map.Entry<Long, Creditcredit> entry : map.entrySet()) {
+      CreditRecordDto recordDto = new CreditRecordDto();
+      User user = userRepository.findOne(entry.getKey());
+      recordDto.setSponsorName(user == null ? "" : user.getName());
+      List<Creditcredit> cdList = creditcredits.stream()
+          .filter(c -> c.getSponsorId().equals(entry.getKey()))
+          .sorted((c1, c2) -> c1.getCreditTime().compareTo(c2.getCreditTime()))
+          .collect(Collectors.toList());
+      List<CreditRecord> recordList = Lists.newArrayList();
+      cdList.forEach(cd -> {
+        recordList.add(CreditRecord.builder()
+            .creditTime(cd.getCreditTime().toString("yyyy-MM-dd HHmmss"))
+            .money(cd.getMoney())
+            .studentId(cd.getStudentId())
+            .build());
+      });
+      recordDto.setRecordList(recordList);
+      dto.getRecordDtos().add(recordDto);
+    }
+    return dto;
   }
 }

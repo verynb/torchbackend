@@ -30,15 +30,17 @@ public class ReleaseSearchDto {
   @ApiModelProperty(name = "市", required = true, position = 4)
   private String city;
 
-  public Predicate toPredicate(){
-    BooleanBuilder conditions = new BooleanBuilder();
-    if(getStartTime()!=null){
-      conditions.and(QRelease.release.createTime.after(new DateTime(getStartTime()).minuteOfDay().withMinimumValue()));
+  public Predicate toPredicate() {
+    BooleanBuilder conditions = new BooleanBuilder(
+        QRelease.release.status.ne(0).and(QRelease.release.status.ne(1)));
+    if (getStartTime() != null) {
+      conditions.and(QRelease.release.createTime
+          .after(new DateTime(getStartTime()).minuteOfDay().withMinimumValue()));
     }
-    if(StringUtils.isNotBlank(getProvince())){
+    if (StringUtils.isNotBlank(getProvince())) {
       conditions.and(QRelease.release.province.eq(getProvince()));
     }
-    if(StringUtils.isNotBlank(getCity())){
+    if (StringUtils.isNotBlank(getCity())) {
       conditions.and(QRelease.release.city.eq(getCity()));
     }
     return conditions;

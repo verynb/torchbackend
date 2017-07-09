@@ -14,6 +14,8 @@ import com.torch.domain.model.homeVisit.HomeVisit;
 import com.torch.domain.model.homeVisit.HomeVisitAuditItem;
 import com.torch.domain.model.homeVisit.HomeVisitAuditItemRepository;
 import com.torch.domain.model.homeVisit.HomeVisitRepository;
+import com.torch.domain.model.release.Release;
+import com.torch.domain.model.release.ReleaseRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,21 +39,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContributeServiceImpl implements ContributeService {
 
-  private  Map<String,String> contributeMap=null;
+  private Map<String, String> contributeMap = null;
 
   private final RedisUtils redisUtils;
   private final ContributeRecordRepository contributeRecordRepository;
 
   private final StudentRepository studentRepository;
 
+  private final ReleaseRepository releaseRepository;
+
 
   @Autowired
   public ContributeServiceImpl(final RedisUtils redisUtils,
       final ContributeRecordRepository contributeRecordRepository,
-      final StudentRepository studentRepository) {
+      final StudentRepository studentRepository,
+      final ReleaseRepository releaseRepository) {
     this.redisUtils = redisUtils;
     this.contributeRecordRepository = contributeRecordRepository;
     this.studentRepository = studentRepository;
+    this.releaseRepository = releaseRepository;
   }
 
   /**
@@ -59,40 +66,44 @@ public class ContributeServiceImpl implements ContributeService {
   @Override
   @Transient
   public synchronized void contribute(Long batchId, List<Long> studentIds) {
-    if(contributeMap==null){
-      contributeMap= Maps.newConcurrentMap();
-      Map<String,String> map=redisUtils.getMap(batchId.toString());
+    if (contributeMap == null) {
+      contributeMap = Maps.newConcurrentMap();
+      Map<String, String> map = redisUtils.getMap(batchId.toString());
       contributeMap.putAll(map);
-      if(isContributed()){
+      if (isContributed()) {
         throw new TorchException("此批次学生已经全部认捐");
       }
     }
     studentIds.forEach(studentId -> {
-        String contribute= contributeMap.get(studentId.toString());
-        if (StringUtils.isNotBlank(contribute) && contribute.equals("0")){
-          contributeMap.put(studentId.toString(),"1");
-          redisUtils.putKeys(batchId.toString(),studentId.toString(),"1");
-          createContributedRecord(studentId, 1L, batchId);
-          updateStudentContribute(studentId, 1L);
-          System.out.println("--------init--------");
+      String contribute = contributeMap.get(studentId.toString());
+      if (StringUtils.isNotBlank(contribute) && contribute.equals("0")) {
+        contributeMap.put(studentId.toString(), "1");
+        redisUtils.putKeys(batchId.toString(), studentId.toString(), "1");
+        createContributedRecord(studentId, Session.getUserId(), batchId);
+        updateStudentContribute(studentId, Session.getUserId());
       }
     });
-    if(isContributed()){
-      contributeMap=null;
+    if (isContributed()) {
+      contributeMap = null;
       //更新发布状态
+      Release release = releaseRepository.findOne(batchId);
+      if(release!=null){
+        release.setStatus(4);
+        releaseRepository.save(release);
+      }
     }
   }
 
-  private boolean isContributed(){
-    List<String> values= Lists.newArrayList();
-    for(Map.Entry<String,String> entry: contributeMap.entrySet()){
+  private boolean isContributed() {
+    List<String> values = Lists.newArrayList();
+    for (Map.Entry<String, String> entry : contributeMap.entrySet()) {
       values.add(entry.getValue());
     }
-    if(values.stream()
-        .filter(value->value.equals("0"))
-        .count()==0){
+    if (values.stream()
+        .filter(value -> value.equals("0"))
+        .count() == 0) {
       return true;
-    }else {
+    } else {
       return false;
     }
   }
@@ -104,6 +115,7 @@ public class ContributeServiceImpl implements ContributeService {
         .ContributeId(contributeId)
         .studentId(studentId)
         .build();
+    c.setCreateTime(new DateTime());
     contributeRecordRepository.save(c);
   }
 
