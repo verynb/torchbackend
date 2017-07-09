@@ -172,7 +172,25 @@ public class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transient
   public void createCredit(CreateCreditDto dto) {
+    Student student=studentRepository.findOne(dto.getStudentId());
+    if(student==null){
+      throw new TorchException("当前学生不存在");
+    }
     Creditcredit creditcre = Creditcredit.builder()
+        .studentId(dto.getStudentId())
+        .address(student.getAddress())
+        .age(student.getAge())
+        .area(student.getArea())
+        .birthday(student.getBirthday())
+        .city(student.getCity())
+        .gender(student.getGender())
+        .grade(student.getGrade())
+        .gradeCode(student.getGradeCode())
+        .identityCard(student.getIdentityCard())
+        .name(student.getName())
+        .province(student.getProvince())
+        .schoolId(student.getSchoolId())
+        .status(student.getStatus())
         .creditTime(dto.toDatetime())
         .money(dto.getMoney())
         .sponsorId(dto.getSponsorId())

@@ -31,6 +31,63 @@ public class Creditcredit extends IdEntity implements Serializable {
   private final static long serialVersionUID = 1L;
 
   private Long studentId;
+
+  /**
+   * 姓名
+   */
+  private String name;
+
+  /**
+   * 性别
+   */
+  private String gender;
+
+  /**
+   * 出生日期
+   */
+  private String birthday;
+  /**
+   *区
+   */
+  private Integer age;
+  /**
+   * 省份
+   */
+  private String province;
+
+  /**
+   * 市
+   */
+  private String city;
+  /**
+   *区
+   */
+  private String area;
+  /**
+   * 详细地址
+   */
+  private String address;
+  //身份证
+  private String identityCard;
+  //学校ID
+  private Long schoolId;
+  //年级
+  private String grade;
+
+  private String gradeCode;
+  //当前资助人
+
+  /**
+   * 0.正常
+   * 1.结案
+   * 2.冻结
+   * 3.预发布
+   * 4.已发布
+   * 5.预订
+   * 6.已结队
+   */
+  private Integer status;
+
   /**
    * 放款金额
    */
