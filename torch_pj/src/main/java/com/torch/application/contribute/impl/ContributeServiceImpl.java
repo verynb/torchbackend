@@ -10,6 +10,7 @@ import com.torch.application.contribute.ContributeService;
 import com.torch.application.homeVisit.HomeVisitService;
 import com.torch.domain.model.contribute.ContributeRecord;
 import com.torch.domain.model.contribute.ContributeRecordRepository;
+import com.torch.domain.model.contribute.QContributeRecord;
 import com.torch.domain.model.contribute.Remittance;
 import com.torch.domain.model.contribute.RemittanceRepository;
 import com.torch.domain.model.homeVisit.HomeVisit;
@@ -22,6 +23,7 @@ import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.security.Session;
+import com.torch.interfaces.contribute.dto.CancelSubscribeDto;
 import com.torch.interfaces.contribute.dto.CreateRemittanceDto;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
 import com.torch.util.cache.RedisUtils;
@@ -103,6 +105,20 @@ public class ContributeServiceImpl implements ContributeService {
 
   @Override
   @Transient
+  public void cancelContribute(CancelSubscribeDto dto) {
+    List<ContributeRecord> crs = (List<ContributeRecord>) contributeRecordRepository
+        .findAll(QContributeRecord.contributeRecord.studentId.eq(dto.getStudentId()));
+    crs.forEach(cr -> {
+      cr.setAbleRemit(false);
+      contributeRecordRepository.save(cr);
+    });
+    Student student = studentRepository.findOne(dto.getStudentId());
+    student.setSponsorId(0L);
+    studentRepository.save(student);
+  }
+
+  @Override
+  @Transient
   public void createRemittance(CreateRemittanceDto dto) {
     Remittance remittance = Remittance.builder()
         .contributeId(dto.getContributeId())
@@ -132,8 +148,9 @@ public class ContributeServiceImpl implements ContributeService {
   private void createContributedRecord(Long studentId, Long contributeId, Long batchId) {
     ContributeRecord c = ContributeRecord.builder()
         .batchId(batchId)
-        .ContributeId(contributeId)
+        .contributeId(contributeId)
         .studentId(studentId)
+        .ableRemit(true)
         .build();
     c.setCreateTime(new DateTime());
     contributeRecordRepository.save(c);

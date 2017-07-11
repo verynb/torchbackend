@@ -156,6 +156,7 @@ public class ReleaseServiceImpl implements ReleaseService {
     if (releaseStudentRepository.count(QReleaseStudent.releaseStudent.batchId.eq(batchId)
         .and(QReleaseStudent.releaseStudent.status.ne(4))) == 0) {
       Release release = releaseRepository.findOne(batchId);
+      release.setLastUpdateTime(new DateTime());
       release.setStatus(2);
       releaseRepository.save(release);
       //查询此批次所有已经发布的学生

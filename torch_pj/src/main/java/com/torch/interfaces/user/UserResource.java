@@ -13,6 +13,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import com.google.common.collect.Lists;
+import com.querydsl.core.BooleanBuilder;
+import com.torch.domain.model.release.QRelease;
 import com.torch.domain.model.user.DictVolunteerRole;
 import com.torch.domain.model.user.DictVolunteerRoleRepository;
 import com.torch.domain.model.user.QUser;
@@ -37,6 +39,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -195,13 +198,18 @@ public class UserResource {
   @RequestMapping(path = "/user/sponsors", method = GET)
   public SponsorListDto getSponsors(
       @ApiParam(value = "分页条数") @RequestParam(required = false) Integer pageSize,
-      @ApiParam(value = "当前页") @RequestParam(required = false) Integer currentPage
+      @ApiParam(value = "当前页") @RequestParam(required = false) Integer currentPage,
+      @ApiParam(value = "手机号")@RequestParam(required = false) String phone
   ) {
     Pageable pageable = null;
     if (pageSize != null && pageSize != 0 && currentPage != null && currentPage != 0) {
       pageable = new PageRequest(currentPage, pageSize);
     }
-    Page<User> page = userRepository.findAll(QUser.user.type.eq(1), pageable);
+    BooleanBuilder conditions = new BooleanBuilder(QUser.user.type.eq(1));
+    if(StringUtils.isNotBlank(phone)){
+      conditions.and(QUser.user.mobile.eq(phone));
+    }
+    Page<User> page = userRepository.findAll(conditions, pageable);
     List<SponsorDetailResultDto> dtos = Lists.newArrayList();
     if (CollectionUtils.isNotEmpty(page.getContent())) {
       page.getContent().forEach(user -> {

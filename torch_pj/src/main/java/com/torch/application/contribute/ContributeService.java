@@ -4,6 +4,7 @@
  */
 package com.torch.application.contribute;
 
+import com.torch.interfaces.contribute.dto.CancelSubscribeDto;
 import com.torch.interfaces.contribute.dto.CreateRemittanceDto;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 public interface ContributeService {
 
   void contribute (Long batchId,List<Long> studentIds);
+
+  void cancelContribute (CancelSubscribeDto dto);
 
   void createRemittance(CreateRemittanceDto dto);
 

@@ -3,18 +3,26 @@ package com.torch.interfaces.contribute.dto;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by yuanj on 2017/6/28.
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SubscribeDto {
 
-  @ApiModelProperty(name = "发布批次ID", required = true, position = 1)
-  @NotNull
-  private Long batchId;
-  @ApiModelProperty(name = "认捐学生", required = true, position = 2)
+  @ApiModelProperty(name = "认捐记录ID", required = true, position = 0)
+  private Long subscribeId;
+  @ApiModelProperty(name = "认捐学生姓名", required = true, position = 1)
+  private String studentName;
 
-  private List<Long> studentIds;
+  @ApiModelProperty(name = "认捐时间", required = true, position = 2)
+  private String subscribeTime;
+
 }

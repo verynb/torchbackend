@@ -40,4 +40,40 @@ public class Remittance extends IdEntity implements Serializable {
   public DateTime getRemittanceTime() {
     return remittanceTime;
   }
+
+  public Long getContributeId() {
+    return contributeId;
+  }
+
+  public void setContributeId(Long contributeId) {
+    this.contributeId = contributeId;
+  }
+
+  public Long getStudentId() {
+    return studentId;
+  }
+
+  public void setStudentId(Long studentId) {
+    this.studentId = studentId;
+  }
+
+  public void setRemittanceTime(DateTime remittanceTime) {
+    this.remittanceTime = remittanceTime;
+  }
+
+  public double getRemittanceMoney() {
+    return remittanceMoney;
+  }
+
+  public void setRemittanceMoney(double remittanceMoney) {
+    this.remittanceMoney = remittanceMoney;
+  }
+
+  public String getRemark() {
+    return remark;
+  }
+
+  public void setRemark(String remark) {
+    this.remark = remark;
+  }
 }
