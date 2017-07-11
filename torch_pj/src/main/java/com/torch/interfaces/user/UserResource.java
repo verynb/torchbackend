@@ -194,10 +194,13 @@ public class UserResource {
   @ApiOperation(value = "获取资助人列表", notes = "", httpMethod = "GET")
   @RequestMapping(path = "/user/sponsors", method = GET)
   public SponsorListDto getSponsors(
-      @ApiParam(value = "分页条数") @RequestParam(required = false, defaultValue = "15") Integer pageSize,
-      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage
+      @ApiParam(value = "分页条数") @RequestParam(required = false) Integer pageSize,
+      @ApiParam(value = "当前页") @RequestParam(required = false) Integer currentPage
   ) {
-    Pageable pageable = new PageRequest(currentPage, pageSize);
+    Pageable pageable = null;
+    if (pageSize != null && pageSize != 0 && currentPage != null && currentPage != 0) {
+      pageable = new PageRequest(currentPage, pageSize);
+    }
     Page<User> page = userRepository.findAll(QUser.user.type.eq(1), pageable);
     List<SponsorDetailResultDto> dtos = Lists.newArrayList();
     if (CollectionUtils.isNotEmpty(page.getContent())) {

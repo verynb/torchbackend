@@ -29,7 +29,7 @@ public class CreateCreditDto {
   private String creditTime;
 
   public DateTime toDatetime() {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HHmmss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
         return (new DateTime(sdf.parse(this.getCreditTime()).getTime()));
       } catch (ParseException e) {

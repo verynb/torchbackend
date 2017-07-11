@@ -178,7 +178,7 @@ public class StudentResource {
       cdList.forEach(cd -> {
         recordList.add(CreditRecord.builder()
             .creditTime(
-                cd.getCreditTime() == null ? "" : cd.getCreditTime().toString("yyyy-MM-dd HHmmss"))
+                cd.getCreditTime() == null ? "" : cd.getCreditTime().toString("yyyy-MM-dd"))
             .money(cd.getMoney())
             .studentId(cd.getStudentId())
             .build());
