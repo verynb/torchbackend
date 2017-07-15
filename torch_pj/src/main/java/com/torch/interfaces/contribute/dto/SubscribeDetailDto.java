@@ -2,6 +2,7 @@ package com.torch.interfaces.contribute.dto;
 
 import com.torch.domain.model.contribute.Remittance;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
+import com.torch.interfaces.returnVisit.dto.ReturnVisitDto;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,9 @@ public class SubscribeDetailDto {
 
   @ApiModelProperty(name = "家访", required = true, position = 7)
   private List<HomeVisitDto> homeVisitDtos;
+
+  @ApiModelProperty(name = "回访", required = true, position = 7)
+  private List<ReturnVisitDto> returnVisitDtos;
 
   @ApiModelProperty(name = "汇款记录", required = true, position = 8)
   private List<Remittance> remittances;

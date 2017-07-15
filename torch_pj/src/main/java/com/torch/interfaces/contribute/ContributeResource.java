@@ -26,10 +26,14 @@ import com.torch.domain.model.release.Release;
 import com.torch.domain.model.release.ReleaseRepository;
 import com.torch.domain.model.release.ReleaseStudent;
 import com.torch.domain.model.release.ReleaseStudentRepository;
+import com.torch.domain.model.returnVisit.ReturnVisit;
+import com.torch.domain.model.returnVisit.ReturnVisitRepository;
 import com.torch.domain.model.school.School;
 import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
+import com.torch.domain.model.user.User;
+import com.torch.domain.model.user.UserRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ReturnDto;
@@ -42,6 +46,7 @@ import com.torch.interfaces.contribute.dto.HomeVisitDto;
 import com.torch.interfaces.contribute.dto.SubscribeDetailDto;
 import com.torch.interfaces.contribute.dto.SubscribeDto;
 import com.torch.interfaces.contribute.dto.SubscribeListDto;
+import com.torch.interfaces.returnVisit.dto.ReturnVisitDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -80,6 +85,10 @@ public class ContributeResource {
 
   private final RemittanceRepository remittanceRepository;
 
+  private final ReturnVisitRepository returnVisitRepository;
+
+  private final UserRepository userRepository;
+
   @Autowired
   public ContributeResource(final ContributeService contributeService,
       final ContributeRecordRepository contributeRecordRepository,
@@ -88,7 +97,9 @@ public class ContributeResource {
       final ReleaseRepository releaseRepository,
       final ReleaseStudentRepository releaseStudentRepository,
       final HomeVisitRepository homeVistRepository,
-      final RemittanceRepository remittanceRepository) {
+      final RemittanceRepository remittanceRepository,
+      final ReturnVisitRepository returnVisitRepository,
+      final UserRepository userRepository) {
     this.contributeService = contributeService;
     this.contributeRecordRepository = contributeRecordRepository;
     this.studentRepository = studentRepository;
@@ -97,6 +108,8 @@ public class ContributeResource {
     this.releaseStudentRepository = releaseStudentRepository;
     this.homeVistRepository = homeVistRepository;
     this.remittanceRepository = remittanceRepository;
+    this.returnVisitRepository = returnVisitRepository;
+    this.userRepository = userRepository;
   }
 
   @RoleCheck
@@ -164,6 +177,8 @@ public class ContributeResource {
 
     List<HomeVisitDto> homeVisitDtos = Lists.newArrayList();
 
+    List<ReturnVisitDto> returnDtos = Lists.newArrayList();
+
     ContributeRecord cr = contributeRecordRepository
         .findOne(id);
     if (cr == null) {
@@ -181,6 +196,9 @@ public class ContributeResource {
     List<HomeVisit> homevisits = (List<HomeVisit>) homeVistRepository
         .findAll(QHomeVisit.homeVisit.studentId.eq(cr.getStudentId() == null ? 0L : cr.getStudentId()));
 
+    List<ReturnVisit> returnVisits = (List<ReturnVisit>) returnVisitRepository
+        .findByStudentId(cr.getStudentId() == null ? 0L : cr.getStudentId());
+
     homevisits.forEach(home -> {
 
       homeVisitDtos.add(HomeVisitDto.builder()
@@ -190,6 +208,18 @@ public class ContributeResource {
           .build());
     });
 
+    returnVisits.forEach(returnVisit -> {
+      User user = userRepository.findOne(returnVisit.getReturnVisitor() == null ? 0l : returnVisit.getReturnVisitor());
+
+      returnDtos.add(ReturnVisitDto.builder()
+          .returnVisitId(returnVisit.getId())
+          .returnVisitTime(
+              returnVisit.getReturnTime() == null ? "" : returnVisit.getReturnTime().toString("yyyy-MM-dd"))
+          .returnVistor(user == null ? "" : user.getName())
+          .build());
+
+    });
+
     List<Remittance> remittances = (List<Remittance>) remittanceRepository
         .findAll(QRemittance.remittance.contributeId.eq(Session.getUserId())
             .and(QRemittance.remittance.studentId.eq(cr.getStudentId() == null ? 0L : cr.getStudentId())));
@@ -197,14 +227,15 @@ public class ContributeResource {
     return SubscribeDetailDto.builder()
         .codeMessage(new CodeMessage())
         .homeVisitDtos(homeVisitDtos)
+        .returnVisitDtos(returnDtos)
         .needMoney(CollectionUtils.isEmpty(releaseStudents) ? 0 : releaseStudents.get(0).getNeedMoney())
         .releaseTime(release == null ? ""
             : release.getLastUpdateTime() == null ? "" : release.getLastUpdateTime().toString("yyyy-MM-dd"))
         .remittances(remittances)
         .schoolName(school == null ? "" : school.getSchoolName())
-        .studentAdree(student==null?"":student.getAddress())
-        .studentAge(student==null?null:student.getAge())
-        .studentName(student==null?null:student.getName())
+        .studentAdree(student == null ? "" : student.getAddress())
+        .studentAge(student == null ? null : student.getAge())
+        .studentName(student == null ? null : student.getName())
         .build();
   }
 }

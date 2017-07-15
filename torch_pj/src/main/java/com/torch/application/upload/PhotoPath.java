@@ -19,4 +19,6 @@ public class PhotoPath {
   private String head;
   private String visit;
 
+  private String returnVisit;
+
 }
