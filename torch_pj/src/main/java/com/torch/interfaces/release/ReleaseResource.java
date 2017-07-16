@@ -190,9 +190,9 @@ public class ReleaseResource {
   public ReturnDto release(@PathVariable("batchId") Long batchId,
       @ApiParam(value = "发布项学生IDS") @RequestBody List<ReleaseStudentDto> releaseStudentIds) {
 
-    if (releaseRepository.count(QRelease.release.status.eq(2)) > 1) {
+   /* if (releaseRepository.count(QRelease.release.status.eq(2)) > 1) {
       throw new TorchException("当前有已经发布的批次");
-    }
+    }*/
     releaseService.release(batchId, releaseStudentIds);
     return ReturnDto.builder()
         .codeMessage(new CodeMessage())
@@ -299,6 +299,9 @@ public class ReleaseResource {
     List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
         .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
     releaseStudents.forEach(releaseStudent -> {
+      if(releaseStudent.getStatus()==5){
+        return;
+      }
       Student filteredStudent = students.stream()
           .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
           .findFirst()
