@@ -77,6 +77,8 @@ public class HomeVistResource {
 
   private final PhotoPath photoPath;
 
+  private final String SERVER_PREFIX = "116.62.208.39";
+
   @Autowired
   private StudentRepository studentRepository;
 
@@ -123,7 +125,7 @@ public class HomeVistResource {
     if (CollectionUtils.isNotEmpty(photos)) {
       photos.forEach(str -> {
         String path = imageUploadService.GenerateImage(str, photoPath.getVisit());
-        applicationForms.add(path);
+        applicationForms.add(SERVER_PREFIX+path);
       });
     }
     return applicationForms;
@@ -194,8 +196,8 @@ public class HomeVistResource {
         .codeMessage(new CodeMessage())
         .studentName(student == null ? "" : student.getName())
         .homeVisitTime(
-            homevisit.getHomeVisitTime() == null ? "" : homevisit.getHomeVisitTime().toString("yyyy-MM-dd HH:mm:ss"))
-        .createTime(homevisit.getCreateTime() == null ? "" : homevisit.getCreateTime().toString("yyyy-MM-dd HH:mm:ss"))
+            homevisit.getHomeVisitTime() == null ? "" : homevisit.getHomeVisitTime().toString("yyyy-MM-dd"))
+        .createTime(homevisit.getCreateTime() == null ? "" : homevisit.getCreateTime().toString("yyyy-MM-dd"))
         .applicationForms(buildPhoto(homevisit.getApplicationForm()))
         .auditChoiceds(auditChoiceds)
         .familyPhotos(buildPhoto(homevisit.getFamilyPhoto()))

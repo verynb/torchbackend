@@ -60,7 +60,7 @@ public class HomeVisitServiceImpl implements HomeVisitService {
         .homeVistorId(command.getHomeVistorId())
         .build();
     if (StringUtils.isNotBlank(command.getHomeVisitTime())) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
         homeVisit.setHomeVisitTime(new DateTime(sdf.parse(command.getHomeVisitTime()).getTime()));
       } catch (ParseException e) {

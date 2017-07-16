@@ -64,6 +64,7 @@ public class StudentServiceImpl implements StudentService {
   public Student addStudent(AddStudentCommand command) {
     Student student = new Student();
     BeanUtils.copyProperties(command, student);
+    student.setStatus(0);
     studentRepository.save(student);
     return student;
   }

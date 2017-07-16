@@ -28,9 +28,12 @@ import com.torch.domain.model.release.ReleaseRepository;
 import com.torch.domain.model.release.ReleaseStudent;
 import com.torch.domain.model.release.ReleaseStudentRepository;
 import com.torch.domain.model.returnVisit.ReturnVisit;
+import com.torch.domain.model.returnVisit.ReturnVisitRepository;
 import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
+import com.torch.domain.model.user.User;
+import com.torch.domain.model.user.UserRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ReturnDto;
@@ -46,13 +49,17 @@ import com.torch.interfaces.release.ReleaseListResultDto;
 import com.torch.interfaces.release.ReleaseSearchDto;
 import com.torch.interfaces.release.ReleaseStudentDto;
 import com.torch.interfaces.returnVisit.dto.CreateReturnVisitDto;
+import com.torch.interfaces.returnVisit.dto.ReturnList;
 import com.torch.interfaces.returnVisit.dto.ReturnVisitDetail;
+import com.torch.interfaces.returnVisit.dto.ReturnVisitListDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,15 +83,27 @@ public class ReturnVisitResource {
 
   private final ImageUploadService imageUploadService;
 
+  private final ReturnVisitRepository returnVisitRepository;
+
+  private final StudentRepository studentRepository;
+
+  private final UserRepository userRepository;
+
   private final PhotoPath photoPath;
+  private final String SERVER_PREFIX = "116.62.208.39";
 
   @Autowired
   public ReturnVisitResource(final ReturnVisitService returnVisitService,
       final ImageUploadService imageUploadService,
-      final PhotoPath photoPath) {
+      final PhotoPath photoPath, final ReturnVisitRepository returnVisitRepository,
+      final StudentRepository studentRepository,
+      final UserRepository userRepository) {
     this.returnVisitService = returnVisitService;
     this.imageUploadService = imageUploadService;
     this.photoPath = photoPath;
+    this.returnVisitRepository = returnVisitRepository;
+    this.studentRepository = studentRepository;
+    this.userRepository = userRepository;
   }
 
 
@@ -116,10 +135,40 @@ public class ReturnVisitResource {
     if (CollectionUtils.isNotEmpty(photos)) {
       photos.forEach(str -> {
         String path = imageUploadService.GenerateImage(str, photoPath.getVisit());
-        visitPhotos.add(path);
+        visitPhotos.add(SERVER_PREFIX + path);
       });
     }
     return visitPhotos;
   }
+
+
+  @RoleCheck
+  @ApiOperation(value = "查询回访列表", notes = "", response = ReturnList.class, httpMethod = "GET")
+  @RequestMapping(path = "/returnVisits/{studentId}", method = GET)
+  @ResponseStatus(HttpStatus.OK)
+  public ReturnList getReturnVisits(@PathVariable("studentId") Long studentId) {
+    List<ReturnVisitListDto> returnVisitListDtoList = Lists.newArrayList();
+    Student s = studentRepository.findOne(studentId);
+    List<ReturnVisit> lists = returnVisitRepository.findByStudentId(studentId);
+    if (CollectionUtils.isNotEmpty(lists)) {
+      lists = lists.stream().filter(list -> list.getReturnTime() != null)
+          .sorted(Comparator.comparing(ReturnVisit::getReturnTime))
+          .collect(Collectors.toList());
+    }
+    lists.forEach((ReturnVisit list) -> {
+      User user = userRepository.findOne(list.getReturnVisitor() == null ? 0 : list.getReturnVisitor());
+      returnVisitListDtoList.add(ReturnVisitListDto.builder()
+          .returnVisitId(list.getId())
+          .returnVisitor(user == null ? "" : user.getName())
+          .studentName(s == null ? "" : s.getName())
+          .returnVisitTime(list.getReturnTime() == null ? "" : list.getReturnTime().toString("yyyy-MM-dd"))
+          .build());
+    });
+    return ReturnList.builder()
+        .codeMessage(new CodeMessage())
+        .returnVisitListDtoList(returnVisitListDtoList)
+        .build();
+  }
+
 
 }
