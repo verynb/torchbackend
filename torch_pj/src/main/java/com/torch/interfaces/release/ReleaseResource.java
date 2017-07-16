@@ -202,36 +202,25 @@ public class ReleaseResource {
   @RoleCheck
   @ApiOperation(value = "根据{开始时间，结束时间，省份，市}查询发布", notes = "", httpMethod = "POST")
   @RequestMapping(path = "/releases", method = POST)
-  public ReleaseListResultDto getReleases(@Valid @RequestBody ReleaseSearchDto dto) {
+  public ReleaseDto getReleases(@Valid @RequestBody ReleaseSearchDto dto) {
     List<Release> releases = (List<Release>) releaseRepository.findAll(dto.toPredicate());
     if (CollectionUtils.isEmpty(releases)) {
-      return ReleaseListResultDto.builder()
-          .releaseList(Collections.EMPTY_LIST)
+      return ReleaseDto.builder()
+          .releases(Collections.EMPTY_LIST)
           .codeMessage(new CodeMessage())
           .build();
     }
-    List<Student> students = (List<Student>) studentRepository.findAll();
-    if (CollectionUtils.isEmpty(students)) {
-      return ReleaseListResultDto.builder()
-          .releaseList(Collections.EMPTY_LIST)
-          .codeMessage(new CodeMessage())
-          .build();
-    }
-    List<AuditItem> auditItems = (List<AuditItem>) auditItemRepository.findAll();
-    List<ReleaseListDto> resultList = Lists.newArrayList();
-    releases.forEach(release -> {
-      List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
-          .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
-      releaseStudents.forEach(releaseStudent -> {
-        Student filteredStudent = students.stream()
-            .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
-            .findFirst()
-            .orElse(null);
-        resultList.add(toDto(releaseStudent.getId(), release, filteredStudent, auditItems));
-      });
+    List<ReleaseBatch> resultList = Lists.newArrayList();
+    releases.forEach(re -> {
+      resultList.add(ReleaseBatch.builder()
+          .id(re.getId())
+          .batchNo(re.getBatchNo())
+          .city(re.getCity())
+          .province(re.getProvince())
+          .build());
     });
-    return ReleaseListResultDto.builder()
-        .releaseList(resultList)
+    return ReleaseDto.builder()
+        .releases(resultList)
         .codeMessage(new CodeMessage())
         .build();
   }
@@ -266,7 +255,7 @@ public class ReleaseResource {
             .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
             .findFirst()
             .orElse(null);
-        resultList.add(toDto(releaseStudent.getId(), release, filteredStudent, auditItems));
+        resultList.add(toDto(releaseStudent, release, filteredStudent, auditItems));
       });
     });
     return ReleaseListResultDto.builder()
@@ -299,14 +288,14 @@ public class ReleaseResource {
     List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
         .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
     releaseStudents.forEach(releaseStudent -> {
-      if(releaseStudent.getStatus()==5){
+      if (releaseStudent.getStatus() == 5) {
         return;
       }
       Student filteredStudent = students.stream()
           .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
           .findFirst()
           .orElse(null);
-      resultList.add(toDto(releaseStudent.getId(), release, filteredStudent, auditItems));
+      resultList.add(toDto(releaseStudent, release, filteredStudent, auditItems));
     });
     return ReleaseListResultDto.builder()
         .releaseList(resultList)
@@ -315,12 +304,13 @@ public class ReleaseResource {
   }
 
 
-  private ReleaseListDto toDto(Long releaseStudentId, Release release, Student student, List<AuditItem> auditItems) {
+  private ReleaseListDto toDto(ReleaseStudent releaseStudent, Release release, Student student, List<AuditItem> auditItems) {
     if (release == null || student == null) {
       return ReleaseListDto.builder().build();
     }
     return ReleaseListDto.builder()
-        .releaseStudentId(releaseStudentId)
+        .releaseStudentId(releaseStudent.getId())
+        .needMoney(releaseStudent.getNeedMoney())
         .batchNo(release.getBatchNo())
         .city(release.getCity())
         .createTime(release.getCreateTime().getMillis())
