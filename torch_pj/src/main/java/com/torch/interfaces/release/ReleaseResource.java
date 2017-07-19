@@ -36,6 +36,7 @@ import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ReturnDto;
 import com.torch.interfaces.common.facade.dto.ReturnIdDto;
+import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
 import com.torch.interfaces.user.command.SponsorAddCommand;
 import com.torch.interfaces.user.command.SponsorUpdateCommand;
@@ -52,8 +53,10 @@ import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -89,6 +92,10 @@ public class ReleaseResource {
 
   private final SchoolRepository schoolRepository;
 
+  private final UserRepository userRepository;
+
+  private final DictVolunteerRoleRepository dictVolunteerRoleRepository;
+
   @Autowired
   public ReleaseResource(final ReleaseService releaseService,
       final ReleaseRepository releaseRepository,
@@ -96,7 +103,9 @@ public class ReleaseResource {
       final StudentRepository studentRepository,
       final HomeVisitAuditItemRepository homeVisitAuditItemRepository,
       final AuditItemRepository auditItemRepository,
-      final SchoolRepository schoolRepository) {
+      final SchoolRepository schoolRepository,
+      final UserRepository userRepository,
+      final DictVolunteerRoleRepository dictVolunteerRoleRepository) {
     this.releaseService = releaseService;
     this.releaseRepository = releaseRepository;
     this.releaseStudentRepository = releaseStudentRepository;
@@ -104,6 +113,8 @@ public class ReleaseResource {
     this.homeVisitAuditItemRepository = homeVisitAuditItemRepository;
     this.auditItemRepository = auditItemRepository;
     this.schoolRepository = schoolRepository;
+    this.userRepository = userRepository;
+    this.dictVolunteerRoleRepository = dictVolunteerRoleRepository;
   }
 
 
@@ -136,6 +147,18 @@ public class ReleaseResource {
   public ReleaseDto addRelease() {
     List<Release> releases = (List<Release>) releaseRepository
         .findAll(QRelease.release.status.eq(0).or(QRelease.release.status.eq(1)));
+    User user = userRepository.findOne(Session.getUserId());
+    DictVolunteerRole role = dictVolunteerRoleRepository.findOne(user == null ? 0l : user.getRoleId());
+    if (role != null && role.getRoleCode().equals("teacher")) {
+      if (CollectionUtils.isNotEmpty(releases) && StringUtils.isNotBlank(user.getProvince())) {
+        releases = releases.stream().filter(release -> release.getProvince().equals(user.getProvince()))
+            .collect(Collectors.toList());
+      }
+      if (CollectionUtils.isNotEmpty(releases) && StringUtils.isNotBlank(user.getCity())) {
+        releases = releases.stream().filter(release -> release.getCity().equals(user.getCity()))
+            .collect(Collectors.toList());
+      }
+    }
     List<ReleaseBatch> resultList = Lists.newArrayList();
     releases.forEach(re -> {
       resultList.add(ReleaseBatch.builder()
@@ -288,7 +311,7 @@ public class ReleaseResource {
     List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
         .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
     releaseStudents.forEach(releaseStudent -> {
-      if (releaseStudent.getStatus() == 5) {
+      if (releaseStudent.getStatus() != null && releaseStudent.getStatus() == 5) {
         return;
       }
       Student filteredStudent = students.stream()
@@ -304,7 +327,8 @@ public class ReleaseResource {
   }
 
 
-  private ReleaseListDto toDto(ReleaseStudent releaseStudent, Release release, Student student, List<AuditItem> auditItems) {
+  private ReleaseListDto toDto(ReleaseStudent releaseStudent, Release release, Student student,
+      List<AuditItem> auditItems) {
     if (release == null || student == null) {
       return ReleaseListDto.builder().build();
     }

@@ -37,6 +37,12 @@ public class ReleaseSearchDto {
       conditions.and(QRelease.release.createTime
           .after(new DateTime(getStartTime()).minuteOfDay().withMinimumValue()));
     }
+
+    if (getEndTime() != null) {
+      conditions.and(QRelease.release.createTime
+          .before(new DateTime(getEndTime()).minuteOfDay().withMaximumValue()));
+    }
+
     if (StringUtils.isNotBlank(getProvince())) {
       conditions.and(QRelease.release.province.eq(getProvince()));
     }

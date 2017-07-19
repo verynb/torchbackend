@@ -151,7 +151,7 @@ public class HomeVistResource {
           .homeVisitId(homeVisit.getId())
           .homeVisitor(homeVisit.getHomeVistor())
           .homeVisitTime(
-              homeVisit.getHomeVisitTime() == null ? "" : homeVisit.getHomeVisitTime().toString("YYYY-MM-DD"))
+              homeVisit.getHomeVisitTime() == null ? "" : homeVisit.getHomeVisitTime().toString("yyyy-MM-dd"))
           .build());
     });
     return HomeList.builder()
