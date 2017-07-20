@@ -226,22 +226,35 @@ public class ReleaseResource {
   @ApiOperation(value = "根据{开始时间，结束时间，省份，市}查询发布", notes = "", httpMethod = "POST")
   @RequestMapping(path = "/releases", method = POST)
   public ReleaseDto getReleases(@Valid @RequestBody ReleaseSearchDto dto) {
-    List<Release> releases = (List<Release>) releaseRepository.findAll(dto.toPredicate());
-    if (CollectionUtils.isEmpty(releases)) {
+    Pageable pageable = new PageRequest(dto.getCurrentPage(), dto.getPageSize());
+    Page<Release> releases = releaseRepository.findAll(dto.toPredicate(), pageable);
+    if (CollectionUtils.isEmpty(releases.getContent())) {
       return ReleaseDto.builder()
           .releases(Collections.EMPTY_LIST)
           .codeMessage(new CodeMessage())
           .build();
     }
     List<ReleaseBatch> resultList = Lists.newArrayList();
-    releases.forEach(re -> {
+    for (Release re : releases) {
       resultList.add(ReleaseBatch.builder()
           .id(re.getId())
           .batchNo(re.getBatchNo())
           .city(re.getCity())
           .province(re.getProvince())
           .build());
-    });
+    }
+    User user = userRepository.findOne(Session.getUserId());
+    DictVolunteerRole role = dictVolunteerRoleRepository.findOne(user == null ? 0l : user.getRoleId());
+    if (role != null && role.getRoleCode().equals("teacher")) {
+      if (CollectionUtils.isNotEmpty(resultList) && StringUtils.isNotBlank(user.getProvince())) {
+        resultList = resultList.stream().filter(release -> release.getProvince().equals(user.getProvince()))
+            .collect(Collectors.toList());
+      }
+      if (CollectionUtils.isNotEmpty(resultList) && StringUtils.isNotBlank(user.getCity())) {
+        resultList = resultList.stream().filter(release -> release.getCity().equals(user.getCity()))
+            .collect(Collectors.toList());
+      }
+    }
     return ReleaseDto.builder()
         .releases(resultList)
         .codeMessage(new CodeMessage())

@@ -9,6 +9,7 @@ import com.torch.util.CommonFun;
 import com.torch.util.cache.RedisUtils;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class VerifyToken {
 
     String token = request.getHeader("x-auth-token");
 
-    if (CommonFun.isNe(token)) {
+    if (StringUtils.isBlank(token)) {
       throw new TokenNotExistException();
     }
     if (CommonFun.isNe(redisUtils.get("token/" + token))) {

@@ -41,10 +41,10 @@ public class Session {
     }
 
     public static void persistenceCurrentSession(Session session) {
-        Session profile = threadSession.get();
-        if (profile == null) {
+//        Session profile = threadSession.get();
+//        if (profile == null) {
         	threadSession.set(session);
-        }
+//        }
     }
 
     public static Session get() {    

@@ -17,8 +17,11 @@ import com.torch.domain.model.homeVisit.HomeVisit;
 import com.torch.domain.model.homeVisit.HomeVisitAuditItem;
 import com.torch.domain.model.homeVisit.HomeVisitAuditItemRepository;
 import com.torch.domain.model.homeVisit.HomeVisitRepository;
+import com.torch.domain.model.release.QReleaseStudent;
 import com.torch.domain.model.release.Release;
 import com.torch.domain.model.release.ReleaseRepository;
+import com.torch.domain.model.release.ReleaseStudent;
+import com.torch.domain.model.release.ReleaseStudentRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
@@ -55,18 +58,22 @@ public class ContributeServiceImpl implements ContributeService {
 
   private final RemittanceRepository remittanceRepository;
 
+  private final ReleaseStudentRepository releaseStudentRepository;
+
 
   @Autowired
   public ContributeServiceImpl(final RedisUtils redisUtils,
       final ContributeRecordRepository contributeRecordRepository,
       final StudentRepository studentRepository,
       final ReleaseRepository releaseRepository,
-      final RemittanceRepository remittanceRepository) {
+      final RemittanceRepository remittanceRepository,
+      final ReleaseStudentRepository releaseStudentRepository) {
     this.redisUtils = redisUtils;
     this.contributeRecordRepository = contributeRecordRepository;
     this.studentRepository = studentRepository;
     this.releaseRepository = releaseRepository;
     this.remittanceRepository = remittanceRepository;
+    this.releaseStudentRepository = releaseStudentRepository;
   }
 
   /**
@@ -90,6 +97,10 @@ public class ContributeServiceImpl implements ContributeService {
         redisUtils.putKeys(batchId.toString(), studentId.toString(), "1");
         createContributedRecord(studentId, Session.getUserId(), batchId);
         updateStudentContribute(studentId, Session.getUserId());
+        updateReleaseStudent(studentId, batchId);
+      } else {
+        Student student = studentRepository.findOne(studentId);
+        throw new TorchException(student == null ? "" : student.getName() + "已经认捐");
       }
     });
     if (isContributed()) {
@@ -165,4 +176,15 @@ public class ContributeServiceImpl implements ContributeService {
       studentRepository.save(student);
     }
   }
+
+  @Transient
+  private void updateReleaseStudent(Long studentId, Long bathId) {
+    List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository.findAll(
+        QReleaseStudent.releaseStudent.batchId.eq(bathId).and(QReleaseStudent.releaseStudent.studentId.eq(studentId)));
+    releaseStudents.forEach(releaseStudent -> {
+      releaseStudent.setStatus(5);
+      releaseStudentRepository.save(releaseStudent);
+    });
+  }
+
 }
