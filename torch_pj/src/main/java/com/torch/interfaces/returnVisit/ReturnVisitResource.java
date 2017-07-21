@@ -90,7 +90,7 @@ public class ReturnVisitResource {
   private final UserRepository userRepository;
 
   private final PhotoPath photoPath;
-  private final String SERVER_PREFIX = "116.62.208.39";
+  private final String SERVER_PREFIX = "120.76.191.33";
 
   @Autowired
   public ReturnVisitResource(final ReturnVisitService returnVisitService,

@@ -77,7 +77,7 @@ public class HomeVistResource {
 
   private final PhotoPath photoPath;
 
-  private final String SERVER_PREFIX = "116.62.208.39";
+  private final String SERVER_PREFIX = "120.76.191.33";
 
   @Autowired
   private StudentRepository studentRepository;

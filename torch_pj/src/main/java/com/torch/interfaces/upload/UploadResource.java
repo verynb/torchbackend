@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "UploadResource", description = "图片上传相关api")
 public class UploadResource {
 
-  private final String SERVER_PREFIX = "116.62.208.39";
+  private final String SERVER_PREFIX = "120.76.191.33";
 
   private final ImageUploadService imageUploadService;
 
