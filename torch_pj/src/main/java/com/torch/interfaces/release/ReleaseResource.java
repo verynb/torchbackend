@@ -324,6 +324,45 @@ public class ReleaseResource {
     List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
         .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
     releaseStudents.forEach(releaseStudent -> {
+      /*if (releaseStudent.getStatus() != null && releaseStudent.getStatus() == 5) {
+        return;
+      }*/
+      Student filteredStudent = students.stream()
+          .filter(student -> student.getId().equals(releaseStudent.getStudentId()))
+          .findFirst()
+          .orElse(null);
+      resultList.add(toDto(releaseStudent, release, filteredStudent, auditItems));
+    });
+    return ReleaseListResultDto.builder()
+        .releaseList(resultList)
+        .codeMessage(new CodeMessage())
+        .build();
+  }
+
+
+  @RoleCheck
+  @ApiOperation(value = "根据批ID查询发布", notes = "", httpMethod = "GET")
+  @RequestMapping(path = "/ableReleases/id", method = GET)
+  public ReleaseListResultDto getableReleases(Long id) {
+    Release release = releaseRepository.findOne(id);
+    if (Objects.isNull(release)) {
+      return ReleaseListResultDto.builder()
+          .releaseList(Collections.EMPTY_LIST)
+          .codeMessage(new CodeMessage())
+          .build();
+    }
+    List<Student> students = (List<Student>) studentRepository.findAll();
+    if (CollectionUtils.isEmpty(students)) {
+      return ReleaseListResultDto.builder()
+          .releaseList(Collections.EMPTY_LIST)
+          .codeMessage(new CodeMessage())
+          .build();
+    }
+    List<AuditItem> auditItems = (List<AuditItem>) auditItemRepository.findAll();
+    List<ReleaseListDto> resultList = Lists.newArrayList();
+    List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository
+        .findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId()));
+    releaseStudents.forEach(releaseStudent -> {
       if (releaseStudent.getStatus() != null && releaseStudent.getStatus() == 5) {
         return;
       }
@@ -338,6 +377,7 @@ public class ReleaseResource {
         .codeMessage(new CodeMessage())
         .build();
   }
+
 
 
   private ReleaseListDto toDto(ReleaseStudent releaseStudent, Release release, Student student,
