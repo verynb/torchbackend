@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 //@EnableAutoConfiguration
 @Component
 @ConfigurationProperties(prefix = "torch.photo.path")
-@PropertySource("classpath:imagePath.properties")
+//@PropertySource("classpath:imagePath.properties")
 @Data
 public class PhotoPath {
 

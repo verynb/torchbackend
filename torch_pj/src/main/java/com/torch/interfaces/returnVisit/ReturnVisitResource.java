@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,7 +91,9 @@ public class ReturnVisitResource {
   private final UserRepository userRepository;
 
   private final PhotoPath photoPath;
-  private final String SERVER_PREFIX = "120.76.191.33";
+
+  @Value("${torch.photo.path.ip}")
+  private String SERVER_PREFIX;
 
   @Autowired
   public ReturnVisitResource(final ReturnVisitService returnVisitService,

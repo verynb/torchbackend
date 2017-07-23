@@ -43,6 +43,7 @@ import com.torch.interfaces.contribute.dto.CancelSubscribeDto;
 import com.torch.interfaces.contribute.dto.CreateRemittanceDto;
 import com.torch.interfaces.contribute.dto.CreateSubscribeDto;
 import com.torch.interfaces.contribute.dto.HomeVisitDto;
+import com.torch.interfaces.contribute.dto.RemittanceDetailDto;
 import com.torch.interfaces.contribute.dto.SubscribeDetailDto;
 import com.torch.interfaces.contribute.dto.SubscribeDto;
 import com.torch.interfaces.contribute.dto.SubscribeListDto;
@@ -224,6 +225,16 @@ public class ContributeResource {
         .findAll(QRemittance.remittance.contributeId.eq(Session.getUserId())
             .and(QRemittance.remittance.studentId.eq(cr.getStudentId() == null ? 0L : cr.getStudentId())));
 
+    List<RemittanceDetailDto> remittanceDetailDtos=Lists.newArrayList();
+    remittances.forEach(remittance -> {
+      remittanceDetailDtos.add(RemittanceDetailDto.builder()
+          .contributeId(remittance.getContributeId())
+          .remark(remittance.getRemark())
+          .remittanceMoney(remittance.getRemittanceMoney())
+          .remittanceTime(remittance.getRemittanceTime()==null?"":remittance.getRemittanceTime().toString("yyyy-MM-dd"))
+          .studentId(remittance.getStudentId())
+          .build());
+    });
     return SubscribeDetailDto.builder()
         .codeMessage(new CodeMessage())
         .homeVisitDtos(homeVisitDtos)
@@ -231,7 +242,7 @@ public class ContributeResource {
         .needMoney(CollectionUtils.isEmpty(releaseStudents) ? 0 : releaseStudents.get(0).getNeedMoney())
         .releaseTime(release == null ? ""
             : release.getLastUpdateTime() == null ? "" : release.getLastUpdateTime().toString("yyyy-MM-dd"))
-        .remittances(remittances)
+        .remittances(remittanceDetailDtos)
         .schoolName(school == null ? "" : school.getSchoolName())
         .studentAdree(student == null ? "" : student.getAddress())
         .studentAge(student == null ? null : student.getAge())

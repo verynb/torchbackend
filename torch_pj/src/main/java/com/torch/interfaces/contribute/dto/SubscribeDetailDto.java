@@ -44,7 +44,7 @@ public class SubscribeDetailDto {
   private List<ReturnVisitDto> returnVisitDtos;
 
   @ApiModelProperty(name = "汇款记录", required = true, position = 8)
-  private List<Remittance> remittances;
+  private List<RemittanceDetailDto> remittances;
 
 
 }

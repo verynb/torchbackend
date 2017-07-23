@@ -45,6 +45,7 @@ import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,7 +78,8 @@ public class HomeVistResource {
 
   private final PhotoPath photoPath;
 
-  private final String SERVER_PREFIX = "120.76.191.33";
+  @Value("${torch.photo.path.ip}")
+  private  String SERVER_PREFIX;
 
   @Autowired
   private StudentRepository studentRepository;

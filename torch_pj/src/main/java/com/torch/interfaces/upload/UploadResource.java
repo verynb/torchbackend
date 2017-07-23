@@ -11,7 +11,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import com.torch.application.school.SchoolService;
 import com.torch.application.upload.ImageUploadService;
 import com.torch.application.upload.PhotoPath;
-import com.torch.domain.model.school.School;
 import com.torch.interfaces.common.exceptions.TorchException;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
@@ -19,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "UploadResource", description = "图片上传相关api")
 public class UploadResource {
 
-  private final String SERVER_PREFIX = "120.76.191.33";
+  @Value("${torch.photo.path.ip}")
+  private  String SERVER_PREFIX;
 
   private final ImageUploadService imageUploadService;
 
