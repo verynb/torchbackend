@@ -15,6 +15,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.torch.application.school.SchoolService;
 import com.torch.application.student.StudentService;
+import com.torch.domain.model.contribute.QRemittance;
+import com.torch.domain.model.contribute.Remittance;
+import com.torch.domain.model.contribute.RemittanceRepository;
 import com.torch.domain.model.release.CreditRepository;
 import com.torch.domain.model.release.Creditcredit;
 import com.torch.domain.model.school.QSchool;
@@ -27,12 +30,15 @@ import com.torch.domain.model.user.UserRepository;
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import com.torch.interfaces.common.facade.dto.ResultDTO;
 import com.torch.interfaces.common.facade.dto.ReturnDto;
+import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.common.security.annotation.RoleCheck;
+import com.torch.interfaces.contribute.dto.RemittanceDetailDto;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,15 +73,19 @@ public class StudentResource {
 
   private final UserRepository userRepository;
 
+  private final RemittanceRepository remittanceRepository;
+
   @Autowired
   public StudentResource(final StudentService studentService,
       final StudentRepository studentRepository,
       final CreditRepository creditRepository,
-      final UserRepository userRepository) {
+      final UserRepository userRepository,
+      final RemittanceRepository remittanceRepository) {
     this.studentService = studentService;
     this.studentRepository = studentRepository;
     this.creditRepository = creditRepository;
     this.userRepository = userRepository;
+    this.remittanceRepository = remittanceRepository;
   }
 
   @RoleCheck
@@ -172,7 +182,7 @@ public class StudentResource {
       recordDto.setSponsorName(user == null ? "" : user.getName());
       List<Creditcredit> cdList = creditcredits.stream()
           .filter(c -> c.getSponsorId().equals(entry.getKey()))
-          .sorted((c1, c2) -> c1.getCreditTime().compareTo(c2.getCreditTime()))
+          .sorted(Comparator.comparing(Creditcredit::getCreditTime))
           .collect(Collectors.toList());
       List<CreditRecord> recordList = Lists.newArrayList();
       cdList.forEach(cd -> {
@@ -186,6 +196,72 @@ public class StudentResource {
       recordDto.setRecordList(recordList);
       dto.getRecordDtos().add(recordDto);
     }
+    return dto;
+  }
+
+
+  @RoleCheck
+  @ApiOperation(value = "根据学生ID查询受助,放款记录", notes = "", response = CreditRecordListDto.class, httpMethod = "GET")
+  @RequestMapping(path = "/students/creditAndReman/{studentId}", method = GET)
+  public CreditAndRemanRecordDto getCreditAndReman(@PathVariable("studentId") long studentId) {
+    CreditAndRemanRecordDto dto = CreditAndRemanRecordDto.builder()
+        .codeMessage(new CodeMessage())
+        .recordDtos(Lists.newArrayList())
+        .remittanceDetailDtos(Lists.newArrayList())
+        .build();
+    List<Creditcredit> creditcredits = creditRepository.findByStudentId(studentId);
+    if (CollectionUtils.isEmpty(creditcredits)) {
+      return dto;
+    }
+    Map<Long, Creditcredit> map = Maps.newHashMap();
+    creditcredits.forEach(creditcredit -> {
+      if (creditcredit == null || creditcredit.getSponsorId() == null) {
+        return;
+      }
+      if (!map.containsKey(creditcredit.getSponsorId())) {
+        map.put(creditcredit.getSponsorId(), creditcredit);
+      }
+    });
+    for (Map.Entry<Long, Creditcredit> entry : map.entrySet()) {
+      CreditRecordDto recordDto = new CreditRecordDto();
+      User user = userRepository.findOne(entry.getKey());
+      recordDto.setSponsorName(user == null ? "" : user.getName());
+      List<Creditcredit> cdList = creditcredits.stream()
+          .filter(c -> c.getSponsorId().equals(entry.getKey()))
+          .sorted(Comparator.comparing(Creditcredit::getCreditTime))
+          .collect(Collectors.toList());
+      List<CreditRecord> recordList = Lists.newArrayList();
+      cdList.forEach(cd -> {
+        recordList.add(CreditRecord.builder()
+            .creditTime(
+                cd.getCreditTime() == null ? "" : cd.getCreditTime().toString("yyyy-MM-dd"))
+            .money(cd.getMoney())
+            .studentId(cd.getStudentId())
+            .build());
+      });
+      recordDto.setRecordList(recordList);
+      dto.getRecordDtos().add(recordDto);
+    }
+
+    List<Remittance> remittances = (List<Remittance>) remittanceRepository
+        .findAll(QRemittance.remittance.contributeId.eq(Session.getUserId())
+            .and(QRemittance.remittance.studentId.eq(studentId)));
+
+    if (CollectionUtils.isNotEmpty(remittances)) {
+      remittances.sort(Comparator.comparing(Remittance::getRemittanceTime));
+    }
+    remittances.forEach(remittance -> {
+      RemittanceDetailDto remittanceDetailDto = RemittanceDetailDto.builder()
+          .contributeId(remittance.getContributeId())
+          .remark(remittance.getRemark())
+          .remittanceMoney(remittance.getRemittanceMoney())
+          .remittanceTime(
+              remittance.getRemittanceTime() == null ? "" : remittance.getRemittanceTime().toString("yyyy-MM-dd"))
+          .studentId(remittance.getStudentId())
+          .build();
+      dto.getRemittanceDetailDtos().add(remittanceDetailDto);
+    });
+
     return dto;
   }
 }
