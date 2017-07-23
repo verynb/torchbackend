@@ -18,10 +18,7 @@ import lombok.NoArgsConstructor;
 public class CreditAndRemanRecordDto {
 
   private CodeMessage codeMessage;
-  //受助记录
-  private List<CreditRecordDto> recordDtos;
 
-  //放款记录
-  private List<RemittanceDetailDto> remittanceDetailDtos;
+  private List<CreditAndRemanRecordListDto> recordDtos;
 
 }

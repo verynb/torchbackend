@@ -207,61 +207,41 @@ public class StudentResource {
     CreditAndRemanRecordDto dto = CreditAndRemanRecordDto.builder()
         .codeMessage(new CodeMessage())
         .recordDtos(Lists.newArrayList())
-        .remittanceDetailDtos(Lists.newArrayList())
         .build();
     List<Creditcredit> creditcredits = creditRepository.findByStudentId(studentId);
-    if (CollectionUtils.isEmpty(creditcredits)) {
-      return dto;
-    }
-    Map<Long, Creditcredit> map = Maps.newHashMap();
-    creditcredits.forEach(creditcredit -> {
-      if (creditcredit == null || creditcredit.getSponsorId() == null) {
-        return;
-      }
-      if (!map.containsKey(creditcredit.getSponsorId())) {
-        map.put(creditcredit.getSponsorId(), creditcredit);
-      }
-    });
-    for (Map.Entry<Long, Creditcredit> entry : map.entrySet()) {
-      CreditRecordDto recordDto = new CreditRecordDto();
-      User user = userRepository.findOne(entry.getKey());
-      recordDto.setSponsorName(user == null ? "" : user.getName());
-      List<Creditcredit> cdList = creditcredits.stream()
-          .filter(c -> c.getSponsorId().equals(entry.getKey()))
-          .sorted(Comparator.comparing(Creditcredit::getCreditTime))
-          .collect(Collectors.toList());
-      List<CreditRecord> recordList = Lists.newArrayList();
-      cdList.forEach(cd -> {
-        recordList.add(CreditRecord.builder()
-            .creditTime(
-                cd.getCreditTime() == null ? "" : cd.getCreditTime().toString("yyyy-MM-dd"))
-            .money(cd.getMoney())
-            .studentId(cd.getStudentId())
-            .build());
-      });
-      recordDto.setRecordList(recordList);
-      dto.getRecordDtos().add(recordDto);
-    }
-
-    List<Remittance> remittances = (List<Remittance>) remittanceRepository
-        .findAll(QRemittance.remittance.contributeId.eq(Session.getUserId())
-            .and(QRemittance.remittance.studentId.eq(studentId)));
-
-    if (CollectionUtils.isNotEmpty(remittances)) {
-      remittances.sort(Comparator.comparing(Remittance::getRemittanceTime));
-    }
-    remittances.forEach(remittance -> {
-      RemittanceDetailDto remittanceDetailDto = RemittanceDetailDto.builder()
-          .contributeId(remittance.getContributeId())
-          .remark(remittance.getRemark())
-          .remittanceMoney(remittance.getRemittanceMoney())
-          .remittanceTime(
-              remittance.getRemittanceTime() == null ? "" : remittance.getRemittanceTime().toString("yyyy-MM-dd"))
-          .studentId(remittance.getStudentId())
+    creditcredits.forEach(credit -> {
+      CreditAndRemanRecordListDto dto1 = CreditAndRemanRecordListDto.builder()
+          .isCredit(true)
+          .money(credit.getMoney())
+          .sponsorName("")
+          .studentId(credit.getStudentId())
+          .time(credit.getCreditTime())
           .build();
-      dto.getRemittanceDetailDtos().add(remittanceDetailDto);
+      dto.getRecordDtos().add(dto1);
     });
-
+    List<Remittance> remittances = (List<Remittance>) remittanceRepository
+        .findAll(QRemittance.remittance.studentId.eq(studentId));
+    remittances.forEach(remittance -> {
+      User user = userRepository.findOne(remittance.getContributeId() == null ? 0l : remittance.getContributeId());
+      CreditAndRemanRecordListDto dto1 = CreditAndRemanRecordListDto.builder()
+          .isCredit(false)
+          .money(remittance.getRemittanceMoney())
+          .sponsorName(user == null ? "" : user.getName())
+          .studentId(remittance.getStudentId())
+          .time(remittance.getRemittanceTime())
+          .build();
+      dto.getRecordDtos().add(dto1);
+    });
+    if (CollectionUtils.isNotEmpty(dto.getRecordDtos())) {
+      List<CreditAndRemanRecordListDto> recordDtos = Lists.newArrayList();
+      dto.getRecordDtos().sort(Comparator.comparing(CreditAndRemanRecordListDto::getTime).reversed());
+      dto.getRecordDtos().forEach(recored -> {
+        recored.setFormatedTime(recored.getTime() == null ? "" : recored.getTime().toString("yyyy-MM-dd"));
+        recored.setTime(null);
+        recordDtos.add(recored);
+      });
+      dto.setRecordDtos(recordDtos);
+    }
     return dto;
   }
 }
