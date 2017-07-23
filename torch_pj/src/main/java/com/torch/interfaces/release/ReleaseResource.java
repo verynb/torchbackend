@@ -185,6 +185,18 @@ public class ReleaseResource {
         .build();
   }
 
+
+  @RoleCheck
+  @ApiOperation(value = "编辑发布批次省市", notes = "", response = Long.class, httpMethod = "POST")
+  @RequestMapping(path = "/release", method = PUT)
+  @ResponseStatus(HttpStatus.CREATED)
+  public ReturnIdDto addRelease(@Valid @RequestBody UpdateReleaseCommand command) {
+    return ReturnIdDto.builder()
+        .id(releaseService.updateRelease(command))
+        .codeMessage(new CodeMessage())
+        .build();
+  }
+
   @RoleCheck
   @ApiOperation(value = "添加发布批次学生", notes = "", httpMethod = "POST")
   @RequestMapping(path = "/release/students", method = POST)
@@ -221,6 +233,10 @@ public class ReleaseResource {
         .codeMessage(new CodeMessage())
         .build();
   }
+
+
+
+
 
   @RoleCheck
   @ApiOperation(value = "根据{开始时间，结束时间，省份，市}查询发布", notes = "", httpMethod = "POST")

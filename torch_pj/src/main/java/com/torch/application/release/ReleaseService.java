@@ -9,6 +9,7 @@ import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
 import com.torch.interfaces.release.CreateCreditDto;
 import com.torch.interfaces.release.ReleaseStudentDto;
+import com.torch.interfaces.release.UpdateReleaseCommand;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.List;
 public interface ReleaseService {
 
   Long addRelease(AddReleaseCommand command);
+
+  Long updateRelease(UpdateReleaseCommand command);
 
   void addReleaseStudent(List<AddReleaseStudentCommand> commands);
 

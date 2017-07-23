@@ -27,6 +27,7 @@ import com.torch.interfaces.release.AddReleaseCommand;
 import com.torch.interfaces.release.AddReleaseStudentCommand;
 import com.torch.interfaces.release.CreateCreditDto;
 import com.torch.interfaces.release.ReleaseStudentDto;
+import com.torch.interfaces.release.UpdateReleaseCommand;
 import com.torch.interfaces.school.AddSchoolCommand;
 import com.torch.interfaces.school.UpdateSchoolCommand;
 import com.torch.util.cache.RedisUtils;
@@ -86,6 +87,16 @@ public class ReleaseServiceImpl implements ReleaseService {
     release.setCreateTime(new DateTime());
     release.setLastUpdateTime(new DateTime());
     release.setStatus(0);
+    releaseRepository.save(release);
+    return release.getId();
+  }
+
+  @Override
+  @Transient
+  public Long updateRelease(UpdateReleaseCommand command) {
+    Release release = releaseRepository.findOne(command.getId());
+    release.setCity(command.getCity());
+    release.setProvince(command.getProvince());
     releaseRepository.save(release);
     return release.getId();
   }
@@ -173,8 +184,8 @@ public class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transient
   public void createCredit(CreateCreditDto dto) {
-    Student student=studentRepository.findOne(dto.getStudentId());
-    if(student==null){
+    Student student = studentRepository.findOne(dto.getStudentId());
+    if (student == null) {
       throw new TorchException("当前学生不存在");
     }
     Creditcredit creditcre = Creditcredit.builder()
