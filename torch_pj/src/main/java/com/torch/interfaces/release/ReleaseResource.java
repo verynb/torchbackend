@@ -175,7 +175,7 @@ public class ReleaseResource {
   }
 
   @RoleCheck
-  @ApiOperation(value = "创建发布", notes = "", response = Long.class, httpMethod = "POST")
+  @ApiOperation(value = "创建发布", notes = "", response = ReturnIdDto.class, httpMethod = "POST")
   @RequestMapping(path = "/release", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
   public ReturnIdDto addRelease(@Valid @RequestBody AddReleaseCommand command) {
@@ -187,7 +187,7 @@ public class ReleaseResource {
 
 
   @RoleCheck
-  @ApiOperation(value = "编辑发布批次省市", notes = "", response = Long.class, httpMethod = "POST")
+  @ApiOperation(value = "编辑发布批次省市", notes = "", response = ReturnIdDto.class, httpMethod = "PUT")
   @RequestMapping(path = "/release", method = PUT)
   @ResponseStatus(HttpStatus.CREATED)
   public ReturnIdDto addRelease(@Valid @RequestBody UpdateReleaseCommand command) {

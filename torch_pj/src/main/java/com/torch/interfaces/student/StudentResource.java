@@ -201,7 +201,7 @@ public class StudentResource {
 
 
   @RoleCheck
-  @ApiOperation(value = "根据学生ID查询受助,放款记录", notes = "", response = CreditRecordListDto.class, httpMethod = "GET")
+  @ApiOperation(value = "根据学生ID查询受助,放款记录", notes = "", response = CreditAndRemanRecordDto.class, httpMethod = "GET")
   @RequestMapping(path = "/students/creditAndReman/{studentId}", method = GET)
   public CreditAndRemanRecordDto getCreditAndReman(@PathVariable("studentId") long studentId) {
     CreditAndRemanRecordDto dto = CreditAndRemanRecordDto.builder()
