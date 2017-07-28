@@ -4,6 +4,7 @@ import com.torch.interfaces.common.exceptions.TorchException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Random;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ImageUploadService {
           bytes[i] += 256;
         }
       }
-      String fileName = new DateTime().getMillis() + ".png";
+      String fileName = new DateTime().getMillis()+new Random().nextInt() + ".png";
       // 生成jpeg图片
       OutputStream out = new FileOutputStream(imgFilePath + fileName);
       out.write(bytes);
