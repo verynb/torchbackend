@@ -32,7 +32,7 @@ public enum StudentExportConfigEnum {
   public int rowIndex;
 
 
-  StudentExportConfigEnum(int rowIndex,int columnIndex) {
+  StudentExportConfigEnum(int columnIndex,int rowIndex) {
     this.columnIndex = columnIndex;
     this.rowIndex = rowIndex;
   }

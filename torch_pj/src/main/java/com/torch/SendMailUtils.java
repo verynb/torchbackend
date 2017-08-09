@@ -84,9 +84,9 @@ public class SendMailUtils {
     JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
     javaMailSender.setJavaMailProperties(properties);
-    javaMailSender.setHost("smtp.163.com");
+    javaMailSender.setHost("smtp.qq.com");
     javaMailSender.setUsername("1107678466@qq.com"); // s根据自己的情况,设置username
-    javaMailSender.setPassword("yuanjiang123"); // 根据自己的情况, 设置password
+    javaMailSender.setPassword("yuanjiang1234"); // 根据自己的情况, 设置password
     javaMailSender.setPort(465);
     javaMailSender.setDefaultEncoding("UTF-8");
 
