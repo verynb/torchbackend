@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author yj 2017-01-18 11:16:14
@@ -27,12 +28,24 @@ public class StudentDetail {
   @ApiModelProperty(name = "学生ID", required = true, position = 1)
   private Long id;
 
+  private String headPhoto;
+
+  /**
+   * 编号
+   */
+  @NotBlank
+  private String sNo;
+
   /**
    * 姓名
    */
   @ApiModelProperty(name = "姓名", required = true, position = 2)
   private String name;
 
+  /**
+   * 名族
+   */
+  private String nation;
   /**
    * 性别
    */
@@ -49,6 +62,26 @@ public class StudentDetail {
    */
   @ApiModelProperty(name = "年龄", required = true, position = 5)
   private Integer age;
+
+  /**
+   * 身高
+   */
+  private String height;
+
+  /**
+   * 体重
+   */
+  private String weight;
+
+  /**
+   * 班级
+   */
+  private String clbum;
+
+  /**
+   * 班主任
+   */
+  private String classTeacher;
   /**
    * 省份
    */
@@ -99,5 +132,7 @@ public class StudentDetail {
    */
   @ApiModelProperty(name = "状态{0.正常,1.结案,2.冻结}", required = true, position = 14)
   private Integer status;
+
+  private String other;
 
 }

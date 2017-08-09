@@ -26,6 +26,14 @@ import org.hibernate.validator.constraints.NotBlank;
 @AllArgsConstructor
 public class AddStudentCommand{
 
+  private String headPhoto;
+
+  /**
+   * 编号
+   */
+  @NotBlank
+  private String sNo;
+
   /**
    * 姓名
    */
@@ -34,11 +42,35 @@ public class AddStudentCommand{
   private String name;
 
   /**
+   * 名族
+   */
+  private String nation;
+  /**
    * 性别
    */
   @NotBlank
   @ApiModelProperty(name = "性别", required = true, position = 2)
   private String gender;
+
+  /**
+   * 身高
+   */
+  private String height;
+
+  /**
+   * 体重
+   */
+  private String weight;
+
+  /**
+   * 班级
+   */
+  private String clbum;
+
+  /**
+   * 班主任
+   */
+  private String classTeacher;
 
   /**
    * 出生日期
@@ -100,5 +132,7 @@ public class AddStudentCommand{
    */
   @ApiModelProperty(name = "状态{0.正常,1.结案,2.冻结}", required = true, position = 13)
   private Integer status;
+
+  private String other;
 
 }

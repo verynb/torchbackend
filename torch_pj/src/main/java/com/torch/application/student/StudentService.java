@@ -35,4 +35,6 @@ public interface StudentService {
 
   void deleteStudent(Long id);
 
+   void exportStudent(Long id, String email) throws Exception;
+
 }

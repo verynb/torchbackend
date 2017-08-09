@@ -57,5 +57,7 @@ public class ReleaseStudent extends IdEntity implements Serializable {
    */
   private Integer status;
 
+  private String remark;
+
 
 }

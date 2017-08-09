@@ -244,4 +244,20 @@ public class StudentResource {
     }
     return dto;
   }
+
+
+  @RoleCheck
+  @ApiOperation(value = "导出学生信息", notes = "", response = StudentDetailDto.class, httpMethod = "POST")
+  @RequestMapping(path = "/students/export/{id}", method = POST)
+  public ReturnDto export(
+      @ApiParam(value = "邮件地址") @RequestParam String email,@PathVariable("id")Long id) {
+    try {
+      studentService.exportStudent(id,email);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return ReturnDto.builder()
+        .codeMessage(new CodeMessage())
+        .build();
+  }
 }

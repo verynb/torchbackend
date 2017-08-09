@@ -160,6 +160,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         }
         releaseStudent.setNeedMoney(id.getNeedMoney());
         releaseStudent.setStatus(4);
+        releaseStudent.setRemark(id.getRemark());
         releaseStudentRepository.save(releaseStudent);
         Student student = studentRepository.findOne(releaseStudent.getStudentId());
         student.setStatus(4);

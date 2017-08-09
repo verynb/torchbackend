@@ -26,6 +26,17 @@ import lombok.NoArgsConstructor;
 public class Student extends IdEntity implements Serializable {
 
   private final static long serialVersionUID = 1L;
+
+  /**
+   * 头像
+   */
+  private String headPhoto;
+
+  /**
+   * 编号
+   */
+  private String sNo;
+
   /**
    * 姓名
    */
@@ -37,9 +48,34 @@ public class Student extends IdEntity implements Serializable {
   private String gender;
 
   /**
+   * 名族
+   */
+  private String nation;
+
+  /**
    * 出生日期
    */
   private String birthday;
+
+  /**
+   * 身高
+   */
+  private String height;
+
+  /**
+   * 体重
+   */
+  private String weight;
+
+  /**
+   * 班级
+   */
+  private String clbum;
+
+  /**
+   * 班主任
+   */
+  private String classTeacher;
   /**
    *区
    */
@@ -82,5 +118,7 @@ public class Student extends IdEntity implements Serializable {
    * 6.已结队
    */
   private Integer status;
+
+  private String other;
 
 }

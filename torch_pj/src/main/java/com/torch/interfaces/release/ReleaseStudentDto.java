@@ -14,4 +14,6 @@ public class ReleaseStudentDto {
   @ApiModelProperty(name = "需要的金额", required = true, position = 1)
   private double needMoney;
 
+  private String remark;
+
 }
