@@ -90,20 +90,17 @@ public class ReturnVisitResource {
 
   private final UserRepository userRepository;
 
-  private final PhotoPath photoPath;
-
   @Value("${torch.photo.path.ip}")
   private String SERVER_PREFIX;
 
   @Autowired
   public ReturnVisitResource(final ReturnVisitService returnVisitService,
       final ImageUploadService imageUploadService,
-      final PhotoPath photoPath, final ReturnVisitRepository returnVisitRepository,
+      final ReturnVisitRepository returnVisitRepository,
       final StudentRepository studentRepository,
       final UserRepository userRepository) {
     this.returnVisitService = returnVisitService;
     this.imageUploadService = imageUploadService;
-    this.photoPath = photoPath;
     this.returnVisitRepository = returnVisitRepository;
     this.studentRepository = studentRepository;
     this.userRepository = userRepository;
@@ -137,7 +134,7 @@ public class ReturnVisitResource {
     List<String> visitPhotos = Lists.newArrayList();
     if (CollectionUtils.isNotEmpty(photos)) {
       photos.forEach(str -> {
-        String path = imageUploadService.GenerateImage(str, photoPath.getVisit());
+        String path = imageUploadService.GenerateImage(str, PhotoPath.PHOTO_PATH);
         visitPhotos.add(SERVER_PREFIX + path);
       });
     }

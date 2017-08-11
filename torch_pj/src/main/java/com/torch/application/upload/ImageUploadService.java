@@ -42,7 +42,7 @@ public class ImageUploadService {
       out.write(bytes);
       out.flush();
       out.close();
-      return imgFilePath + fileName;
+      return fileName;
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }

@@ -16,9 +16,10 @@ import org.springframework.stereotype.Component;
 @Data
 public class PhotoPath {
 
-  private String head;
-  private String visit;
+ public static String PHOTO_PATH="C:\\nginx-1.13.3\\torch\\photo\\";
 
-  private String returnVisit;
+ public static String EXCEL_TEMP="C:\\nginx-1.13.3\\torch\\excelTemp\\";
+
+ public static String NEW_EXCEL="C:\\nginx-1.13.3\\torch\\newExcel\\";
 
 }

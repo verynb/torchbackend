@@ -76,7 +76,6 @@ public class HomeVistResource {
 
   private final ImageUploadService imageUploadService;
 
-  private final PhotoPath photoPath;
 
   @Value("${torch.photo.path.ip}")
   private  String SERVER_PREFIX;
@@ -91,8 +90,8 @@ public class HomeVistResource {
       final AuditRepository auditRepository,
       final AuditItemRepository auditItemRepository,
       final ReleaseRepository releaseRepository,
-      final ImageUploadService imageUploadService,
-      final PhotoPath photoPath
+      final ImageUploadService imageUploadService
+
   ) {
     this.homeVistRepository = homeVistRepository;
     this.homeVistAuditItemRepository = homeVistAuditItemRepository;
@@ -101,7 +100,6 @@ public class HomeVistResource {
     this.auditItemRepository = auditItemRepository;
     this.releaseRepository = releaseRepository;
     this.imageUploadService = imageUploadService;
-    this.photoPath = photoPath;
   }
 
   @RoleCheck
@@ -126,7 +124,7 @@ public class HomeVistResource {
     List<String> applicationForms = Lists.newArrayList();
     if (CollectionUtils.isNotEmpty(photos)) {
       photos.forEach(str -> {
-        String path = imageUploadService.GenerateImage(str, photoPath.getVisit());
+        String path = imageUploadService.GenerateImage(str, PhotoPath.PHOTO_PATH);
         applicationForms.add(SERVER_PREFIX+path);
       });
     }

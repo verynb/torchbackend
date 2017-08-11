@@ -35,21 +35,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class UploadResource {
 
   @Value("${torch.photo.path.ip}")
-  private  String SERVER_PREFIX;
+  private String SERVER_PREFIX;
 
   private final ImageUploadService imageUploadService;
 
   private final SchoolService schoolService;
 
-  private final PhotoPath photoPath;
-
   @Autowired
   public UploadResource(final ImageUploadService imageUploadService,
-      final SchoolService schoolService,
-      final PhotoPath photoPath) {
+      final SchoolService schoolService
+  ) {
     this.imageUploadService = imageUploadService;
     this.schoolService = schoolService;
-    this.photoPath = photoPath;
   }
 
   @RoleCheck
@@ -57,7 +54,7 @@ public class UploadResource {
   @RequestMapping(path = "/headPhoto", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
   public UploadRusltDto uploadHeadPhoto(@RequestBody UploadDto uploadDto) {
-    String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), photoPath.getHead());
+    String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), PhotoPath.PHOTO_PATH);
     if (StringUtils.isBlank(fullPath)) {
       throw new TorchException("头像上传失败");
     }
@@ -72,7 +69,7 @@ public class UploadResource {
   @RequestMapping(path = "/visitPhoto", method = POST)
   @ResponseStatus(HttpStatus.CREATED)
   public UploadRusltDto uploadVisitPhoto(@RequestBody UploadDto uploadDto) {
-    String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), photoPath.getVisit());
+    String fullPath = imageUploadService.GenerateImage(uploadDto.getImgStr(), PhotoPath.PHOTO_PATH);
     if (StringUtils.isBlank(fullPath)) {
       throw new TorchException("上传失败");
     }

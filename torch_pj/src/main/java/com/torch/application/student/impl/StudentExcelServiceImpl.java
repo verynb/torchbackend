@@ -5,11 +5,11 @@
 package com.torch.application.student.impl;
 
 import com.torch.SendMailUtils;
+import com.torch.application.upload.PhotoPath;
 import com.torch.domain.model.school.School;
 import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
 import com.torch.domain.model.student.StudentRepository;
-import com.torch.domain.model.user.DictVolunteerRoleRepository;
 import com.torch.domain.model.user.User;
 import com.torch.domain.model.user.UserRepository;
 import com.torch.interfaces.common.exceptions.TorchException;
@@ -26,8 +26,6 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFPatriarch;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -52,21 +50,15 @@ public class StudentExcelServiceImpl {
 
   private final UserRepository userRepository;
 
-  private final DictVolunteerRoleRepository dictVolunteerRoleRepository;
-
-  private final String EXPORT_TEMP = "D:";
-
-  private final String PATH = "D:\\data\\excel\\";
 
   @Autowired
   public StudentExcelServiceImpl(final StudentRepository studentRepository,
       final SchoolRepository schoolRepository,
-      final UserRepository userRepository,
-      final DictVolunteerRoleRepository dictVolunteerRoleRepository) {
+      final UserRepository userRepository
+  ) {
     this.studentRepository = studentRepository;
     this.schoolRepository = schoolRepository;
     this.userRepository = userRepository;
-    this.dictVolunteerRoleRepository = dictVolunteerRoleRepository;
   }
 
   public StudentDetail getStudentDetail(Long id) {
@@ -89,7 +81,7 @@ public class StudentExcelServiceImpl {
   }
 
   public void exportStudent(Long id, String email) throws Exception {
-    InputStream inputStream = new FileInputStream(EXPORT_TEMP+"\\学生信息备案表.xls");
+    InputStream inputStream = new FileInputStream(PhotoPath.EXCEL_TEMP + "学生信息备案表.xls");
     Workbook workbook = WorkbookFactory.create(inputStream);
     Sheet sheet = workbook.getSheet("sheet1");
     StudentDetail detail = getStudentDetail(id);
@@ -164,7 +156,7 @@ public class StudentExcelServiceImpl {
         .getCell(StudentExportConfigEnum.OTHER.getColumnIndex())
         .setCellValue(detail.getOther() == null ? "" : detail.getOther());
 
-    String path = PATH + new DateTime().getMillis() + ".xls";
+    String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
     OutputStream out = new FileOutputStream(path);
     workbook.write(out);
     out.close();
@@ -181,37 +173,36 @@ public class StudentExcelServiceImpl {
     }
     Long spId = student.getSponsorId();
     User sp = userRepository.findOne(spId == null ? 0l : spId);
-    InputStream inputStream = new FileInputStream(EXPORT_TEMP+"\\照片打印.xls");
+    InputStream inputStream = new FileInputStream(PhotoPath.EXCEL_TEMP + "\\照片打印.xls");
     Workbook workbook = WorkbookFactory.create(inputStream);
     Sheet sheet = workbook.getSheet("sheet1");
 
     sheet.getRow(0)
         .getCell(1)
-        .setCellValue(StringUtils.isBlank(student.getsNo())?"":student.getsNo());
+        .setCellValue(StringUtils.isBlank(student.getsNo()) ? "" : student.getsNo());
     sheet.getRow(0)
         .getCell(4)
-        .setCellValue(StringUtils.isBlank(student.getName())?"":student.getName());
+        .setCellValue(StringUtils.isBlank(student.getName()) ? "" : student.getName());
     sheet.getRow(1)
         .getCell(1)
-        .setCellValue((sp==null || StringUtils.isBlank(sp.getName()))?"":sp.getName());
+        .setCellValue((sp == null || StringUtils.isBlank(sp.getName())) ? "" : sp.getName());
     sheet.getRow(1)
         .getCell(4)
-        .setCellValue((sp==null || StringUtils.isBlank(sp.getMobile()))?"":sp.getMobile());
+        .setCellValue((sp == null || StringUtils.isBlank(sp.getMobile())) ? "" : sp.getMobile());
 
-    if(StringUtils.isNotBlank(student.getHeadPhoto())){
-      URL url = new URL("http://"+student.getHeadPhoto());
-      Drawing patriarch =  sheet.createDrawingPatriarch();
-      insertImage(workbook,patriarch,getImageData(ImageIO.read(url)),2,0,1);
+    if (StringUtils.isNotBlank(student.getHeadPhoto())) {
+      URL url = new URL("http://" + student.getHeadPhoto());
+      Drawing patriarch = sheet.createDrawingPatriarch();
+      insertImage(workbook, patriarch, getImageData(ImageIO.read(url)), 2, 0, 1);
     }
 
-    String path = PATH + new DateTime().getMillis() + ".xls";
+    String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
     OutputStream out = new FileOutputStream(path);
     workbook.write(out);
     out.close();
     String[] tops = {email};
     JavaMailSenderImpl sender = SendMailUtils.initJavaMailSender();
     SendMailUtils.sendWithAttament(sender, tops, "照片资料打印", "", "照片资料打印.xls", path);
-
 
   }
 
