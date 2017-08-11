@@ -21,6 +21,9 @@ public class SubscribeDetailDto {
 
   private CodeMessage codeMessage;
 
+  @ApiModelProperty(name = "认捐学生ID", required = true, position = 1)
+  private Long studentId;
+
   @ApiModelProperty(name = "认捐学生姓名", required = true, position = 1)
   private String studentName;
 

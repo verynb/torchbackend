@@ -158,6 +158,7 @@ public class ContributeResource {
     crs.forEach(cr -> {
       Student student = studentRepository.findOne(cr.getStudentId() == null ? 0L : cr.getStudentId());
       SubscribeDto dto = SubscribeDto.builder()
+          .studentId(student==null?0l:student.getId())
           .studentName(student == null ? "" : student.getName())
           .subscribeId(cr.getId())
           .subscribeTime(cr.getCreateTime() == null ? "" : cr.getCreateTime().toString("yyyy-MM-dd"))
@@ -243,6 +244,7 @@ public class ContributeResource {
         .releaseTime(release == null ? ""
             : release.getLastUpdateTime() == null ? "" : release.getLastUpdateTime().toString("yyyy-MM-dd"))
         .remittances(remittanceDetailDtos)
+        .studentId(student == null ? 0l :student.getId())
         .schoolName(school == null ? "" : school.getSchoolName())
         .studentAdree(student == null ? "" : student.getAddress())
         .studentAge(student == null ? null : student.getAge())

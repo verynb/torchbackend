@@ -73,7 +73,7 @@ public class StudentServiceImpl implements StudentService {
   @Override
   @Transient
   public Student addStudent(AddStudentCommand command) {
-    long count = studentRepository.count(QStudent.student.sNo.eq(command.getSNo()));
+    long count = studentRepository.count(QStudent.student.sNo.eq(command.getsNo()));
     if (count > 0) {
       throw new TorchException("编号重复");
     }
@@ -91,8 +91,8 @@ public class StudentServiceImpl implements StudentService {
     if (before.getStatus() >= 4) {
       throw new TorchException("学生已经发布不能做修改！");
     }
-    if (before.getSNo() != null && !before.getSNo().equals(command.getSNo())) {
-      long count = studentRepository.count(QStudent.student.sNo.eq(command.getSNo()));
+    if (before.getsNo() != null && !before.getsNo().equals(command.getsNo())) {
+      long count = studentRepository.count(QStudent.student.sNo.eq(command.getsNo()));
       if (count > 0) {
         throw new TorchException("编号重复");
       }
@@ -190,7 +190,7 @@ public class StudentServiceImpl implements StudentService {
     StudentDetail detail = getStudentDetail(id);
     sheet.getRow(StudentExportConfigEnum.S_NO.getRowIndex())
         .getCell(StudentExportConfigEnum.S_NO.getColumnIndex())
-        .setCellValue(detail.getSNo() == null ? "" : detail.getSNo());
+        .setCellValue(detail.getsNo() == null ? "" : detail.getsNo());
 
     sheet.getRow(StudentExportConfigEnum.NAME.getRowIndex())
         .getCell(StudentExportConfigEnum.NAME.getColumnIndex())

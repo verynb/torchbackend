@@ -4,11 +4,7 @@
  */
 package com.torch.interfaces.student;
 
-import com.torch.domain.model.common.IdEntity;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +16,6 @@ import org.hibernate.validator.constraints.NotBlank;
  * @author yj 2017-01-18 11:16:14
  * @version 1.0
  */
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -135,4 +130,171 @@ public class AddStudentCommand{
 
   private String other;
 
+  public String getHeadPhoto() {
+    return headPhoto;
+  }
+
+  public void setHeadPhoto(String headPhoto) {
+    this.headPhoto = headPhoto;
+  }
+
+  public String getsNo() {
+    return sNo;
+  }
+
+  public void setsNo(String sNo) {
+    this.sNo = sNo;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getNation() {
+    return nation;
+  }
+
+  public void setNation(String nation) {
+    this.nation = nation;
+  }
+
+  public String getGender() {
+    return gender;
+  }
+
+  public void setGender(String gender) {
+    this.gender = gender;
+  }
+
+  public String getHeight() {
+    return height;
+  }
+
+  public void setHeight(String height) {
+    this.height = height;
+  }
+
+  public String getWeight() {
+    return weight;
+  }
+
+  public void setWeight(String weight) {
+    this.weight = weight;
+  }
+
+  public String getClbum() {
+    return clbum;
+  }
+
+  public void setClbum(String clbum) {
+    this.clbum = clbum;
+  }
+
+  public String getClassTeacher() {
+    return classTeacher;
+  }
+
+  public void setClassTeacher(String classTeacher) {
+    this.classTeacher = classTeacher;
+  }
+
+  public String getBirthday() {
+    return birthday;
+  }
+
+  public void setBirthday(String birthday) {
+    this.birthday = birthday;
+  }
+
+  public Integer getAge() {
+    return age;
+  }
+
+  public void setAge(Integer age) {
+    this.age = age;
+  }
+
+  public String getProvince() {
+    return province;
+  }
+
+  public void setProvince(String province) {
+    this.province = province;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getArea() {
+    return area;
+  }
+
+  public void setArea(String area) {
+    this.area = area;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
+
+  public String getIdentityCard() {
+    return identityCard;
+  }
+
+  public void setIdentityCard(String identityCard) {
+    this.identityCard = identityCard;
+  }
+
+  public Long getSchoolId() {
+    return schoolId;
+  }
+
+  public void setSchoolId(Long schoolId) {
+    this.schoolId = schoolId;
+  }
+
+  public String getGrade() {
+    return grade;
+  }
+
+  public void setGrade(String grade) {
+    this.grade = grade;
+  }
+
+  public String getGradeCode() {
+    return gradeCode;
+  }
+
+  public void setGradeCode(String gradeCode) {
+    this.gradeCode = gradeCode;
+  }
+
+  public Integer getStatus() {
+    return status;
+  }
+
+  public void setStatus(Integer status) {
+    this.status = status;
+  }
+
+  public String getOther() {
+    return other;
+  }
+
+  public void setOther(String other) {
+    this.other = other;
+  }
 }

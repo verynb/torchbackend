@@ -1,8 +1,8 @@
 package com.torch;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 import java.io.File;
 import java.util.Properties;
+import javax.mail.MessagingException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;

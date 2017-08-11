@@ -24,7 +24,6 @@ public class UpdateReleaseCommand {
   /**
    * 批次
    */
-  @NotBlank
   @ApiModelProperty(name = "发布批次ID", required = true, position = 1)
   private Long id;
 
