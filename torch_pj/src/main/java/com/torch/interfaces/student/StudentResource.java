@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.torch.application.school.SchoolService;
 import com.torch.application.student.StudentService;
+import com.torch.application.student.impl.StudentExcelServiceImpl;
 import com.torch.domain.model.contribute.QRemittance;
 import com.torch.domain.model.contribute.Remittance;
 import com.torch.domain.model.contribute.RemittanceRepository;
@@ -75,17 +76,21 @@ public class StudentResource {
 
   private final RemittanceRepository remittanceRepository;
 
+  private final StudentExcelServiceImpl studentExcelService;
+
   @Autowired
   public StudentResource(final StudentService studentService,
       final StudentRepository studentRepository,
       final CreditRepository creditRepository,
       final UserRepository userRepository,
-      final RemittanceRepository remittanceRepository) {
+      final RemittanceRepository remittanceRepository,
+      final StudentExcelServiceImpl studentExcelService) {
     this.studentService = studentService;
     this.studentRepository = studentRepository;
     this.creditRepository = creditRepository;
     this.userRepository = userRepository;
     this.remittanceRepository = remittanceRepository;
+    this.studentExcelService = studentExcelService;
   }
 
   @RoleCheck
@@ -247,12 +252,12 @@ public class StudentResource {
 
 
   @RoleCheck
-  @ApiOperation(value = "导出学生信息", notes = "", response = StudentDetailDto.class, httpMethod = "POST")
-  @RequestMapping(path = "/students/export/{id}", method = POST)
+  @ApiOperation(value = "导出学生信息", notes = "", httpMethod = "GET")
+  @RequestMapping(path = "/students/export/{id}", method = GET)
   public ReturnDto export(
-      @ApiParam(value = "邮件地址") @RequestParam String email,@PathVariable("id")Long id) {
+      @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id) {
     try {
-      studentService.exportStudent(id,email);
+      studentExcelService.exportStudent(id, email);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -260,4 +265,21 @@ public class StudentResource {
         .codeMessage(new CodeMessage())
         .build();
   }
+
+  @RoleCheck
+  @ApiOperation(value = "导出学生照片信息", notes = "",  httpMethod = "GET")
+  @RequestMapping(path = "/studentPhoto/export/{id}", method = GET)
+  public ReturnDto exportPhoto(
+      @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id) {
+    try {
+      studentExcelService.exportStudentPhoto(id, email);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return ReturnDto.builder()
+        .codeMessage(new CodeMessage())
+        .build();
+  }
+
+
 }

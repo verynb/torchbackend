@@ -86,7 +86,7 @@ public class SendMailUtils {
     javaMailSender.setJavaMailProperties(properties);
     javaMailSender.setHost("smtp.qq.com");
     javaMailSender.setUsername("1107678466@qq.com"); // s根据自己的情况,设置username
-    javaMailSender.setPassword("yuanjiang1234"); // 根据自己的情况, 设置password
+    javaMailSender.setPassword("lrtklzfjqdytjdaa"); // 根据自己的情况, 设置password
     javaMailSender.setPort(465);
     javaMailSender.setDefaultEncoding("UTF-8");
 
