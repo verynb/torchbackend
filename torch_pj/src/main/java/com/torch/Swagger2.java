@@ -28,7 +28,7 @@ public class Swagger2 {
       .name("x-auth-token").description("认证令牌")
       .parameterType("header").defaultValue("xxxxx-admin").modelRef(new ModelRef("string"))
       .build();
-  private final static String TEST_HOST = "116.62.208.39:8080";
+  private final static String TEST_HOST = "120.76.191.33:8080";
 
   @Bean
   public Docket searchRestApi4() {

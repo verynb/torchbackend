@@ -27,6 +27,8 @@ public class ReleaseListDto {
   private Long releaseStudentId;
   @ApiModelProperty(name = "学生ID", required = true, position = 6)
   private Long studentId;
+  @ApiModelProperty(name = "学生头像",  required = true, position = 6)
+  private String headPhoto;
   @ApiModelProperty(name = "学生姓名", required = true, position = 7)
   private String studentName;
   @ApiModelProperty(name = "年级", required = true, position = 8)

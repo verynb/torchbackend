@@ -166,7 +166,7 @@ public class StudentExcelServiceImpl {
   }
 
 
-  public void exportStudentPhoto(Long id, String email) throws Exception {
+  public void exportStudentPhoto(Long id, String email,String url) throws Exception {
     Student student = studentRepository.findOne(id);
     if (Objects.isNull(student)) {
       throw new TorchException("学生无效");
@@ -191,9 +191,9 @@ public class StudentExcelServiceImpl {
         .setCellValue((sp == null || StringUtils.isBlank(sp.getMobile())) ? "" : sp.getMobile());
 
     if (StringUtils.isNotBlank(student.getHeadPhoto())) {
-      URL url = new URL("http://" + student.getHeadPhoto());
+      URL u = new URL("http://" + url);
       Drawing patriarch = sheet.createDrawingPatriarch();
-      insertImage(workbook, patriarch, getImageData(ImageIO.read(url)), 2, 0, 1);
+      insertImage(workbook, patriarch, getImageData(ImageIO.read(u)), 2, 0, 1);
     }
 
     String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";

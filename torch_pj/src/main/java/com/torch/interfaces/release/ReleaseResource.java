@@ -414,6 +414,7 @@ public class ReleaseResource {
         .studentId(student.getId())
         .scores(buildScores(release.getId(), student.getId(), auditItems))
         .studentName(student.getName())
+            .headPhoto(student.getHeadPhoto())
         .address(student.getAddress())
         .age(student.getAge())
         .area(student.getArea())

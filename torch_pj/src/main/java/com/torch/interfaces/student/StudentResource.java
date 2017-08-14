@@ -270,9 +270,10 @@ public class StudentResource {
   @ApiOperation(value = "导出学生照片信息", notes = "",  httpMethod = "GET")
   @RequestMapping(path = "/studentPhoto/export/{id}", method = GET)
   public ReturnDto exportPhoto(
-      @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id) {
+      @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id,
+      String url) {
     try {
-      studentExcelService.exportStudentPhoto(id, email);
+      studentExcelService.exportStudentPhoto(id, email,url);
     } catch (Exception e) {
       e.printStackTrace();
     }
