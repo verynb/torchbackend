@@ -254,8 +254,8 @@ public class StudentExcelServiceImpl {
     List<ReleaseStudent> res = (List<ReleaseStudent>) releaseStudentRepository
         .findAll(QReleaseStudent.releaseStudent.studentId.eq(studentId));
 
-//    InputStream inputStream = new FileInputStream(PhotoPath.EXCEL_TEMP + "\\受助人承诺书.xls");
-    InputStream inputStream = new FileInputStream( "D:\\受助人承诺书.xls");
+    InputStream inputStream = new FileInputStream(PhotoPath.EXCEL_TEMP + "\\受助人承诺书.xls");
+//    InputStream inputStream = new FileInputStream( "D:\\受助人承诺书.xls");
     Workbook workbook = WorkbookFactory.create(inputStream);
     Sheet sheet = workbook.getSheet("sheet1");
 
@@ -309,8 +309,8 @@ public class StudentExcelServiceImpl {
         .setCellValue(
             StringUtils.isBlank(student.getName())?"":student.getName());
 
-//    String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
-    String path = "D:\\" + new DateTime().getMillis() + ".xls";
+    String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
+//    String path = "D:\\" + new DateTime().getMillis() + ".xls";
     OutputStream out = new FileOutputStream(path);
     workbook.write(out);
     out.close();
