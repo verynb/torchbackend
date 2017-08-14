@@ -158,10 +158,11 @@ public class ContributeResource {
     crs.forEach(cr -> {
       Student student = studentRepository.findOne(cr.getStudentId() == null ? 0L : cr.getStudentId());
       SubscribeDto dto = SubscribeDto.builder()
-          .studentId(student==null?0l:student.getId())
+          .studentId(student == null ? 0l : student.getId())
           .studentName(student == null ? "" : student.getName())
           .subscribeId(cr.getId())
           .subscribeTime(cr.getCreateTime() == null ? "" : cr.getCreateTime().toString("yyyy-MM-dd"))
+          .subscribed((student == null || student.getSponsorId() == null) ? false : true)
           .build();
       subscribeDtos.add(dto);
     });
@@ -226,13 +227,14 @@ public class ContributeResource {
         .findAll(QRemittance.remittance.contributeId.eq(Session.getUserId())
             .and(QRemittance.remittance.studentId.eq(cr.getStudentId() == null ? 0L : cr.getStudentId())));
 
-    List<RemittanceDetailDto> remittanceDetailDtos=Lists.newArrayList();
+    List<RemittanceDetailDto> remittanceDetailDtos = Lists.newArrayList();
     remittances.forEach(remittance -> {
       remittanceDetailDtos.add(RemittanceDetailDto.builder()
           .contributeId(remittance.getContributeId())
           .remark(remittance.getRemark())
           .remittanceMoney(remittance.getRemittanceMoney())
-          .remittanceTime(remittance.getRemittanceTime()==null?"":remittance.getRemittanceTime().toString("yyyy-MM-dd"))
+          .remittanceTime(
+              remittance.getRemittanceTime() == null ? "" : remittance.getRemittanceTime().toString("yyyy-MM-dd"))
           .studentId(remittance.getStudentId())
           .build());
     });
@@ -241,10 +243,11 @@ public class ContributeResource {
         .homeVisitDtos(homeVisitDtos)
         .returnVisitDtos(returnDtos)
         .needMoney(CollectionUtils.isEmpty(releaseStudents) ? 0 : releaseStudents.get(0).getNeedMoney())
+        .remark(CollectionUtils.isEmpty(releaseStudents) ? "" : releaseStudents.get(0).getRemark())
         .releaseTime(release == null ? ""
             : release.getLastUpdateTime() == null ? "" : release.getLastUpdateTime().toString("yyyy-MM-dd"))
         .remittances(remittanceDetailDtos)
-        .studentId(student == null ? 0l :student.getId())
+        .studentId(student == null ? 0l : student.getId())
         .schoolName(school == null ? "" : school.getSchoolName())
         .studentAdree(student == null ? "" : student.getAddress())
         .studentAge(student == null ? null : student.getAge())

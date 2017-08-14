@@ -28,4 +28,7 @@ public class SubscribeDto {
   @ApiModelProperty(name = "认捐时间", required = true, position = 2)
   private String subscribeTime;
 
+  @ApiModelProperty(name = "是否已经认捐，true为已经认捐，false为未认捐", required = true, position = 2)
+  private Boolean subscribed;
+
 }

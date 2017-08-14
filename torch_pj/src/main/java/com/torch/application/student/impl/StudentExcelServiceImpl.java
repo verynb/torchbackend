@@ -6,6 +6,9 @@ package com.torch.application.student.impl;
 
 import com.torch.SendMailUtils;
 import com.torch.application.upload.PhotoPath;
+import com.torch.domain.model.release.QReleaseStudent;
+import com.torch.domain.model.release.ReleaseStudent;
+import com.torch.domain.model.release.ReleaseStudentRepository;
 import com.torch.domain.model.school.School;
 import com.torch.domain.model.school.SchoolRepository;
 import com.torch.domain.model.student.Student;
@@ -22,8 +25,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 import javax.imageio.ImageIO;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.ss.usermodel.Drawing;
@@ -50,15 +55,19 @@ public class StudentExcelServiceImpl {
 
   private final UserRepository userRepository;
 
+  private final ReleaseStudentRepository releaseStudentRepository;
+
 
   @Autowired
   public StudentExcelServiceImpl(final StudentRepository studentRepository,
       final SchoolRepository schoolRepository,
-      final UserRepository userRepository
+      final UserRepository userRepository,
+      final ReleaseStudentRepository releaseStudentRepository
   ) {
     this.studentRepository = studentRepository;
     this.schoolRepository = schoolRepository;
     this.userRepository = userRepository;
+    this.releaseStudentRepository = releaseStudentRepository;
   }
 
   public StudentDetail getStudentDetail(Long id) {
@@ -229,5 +238,87 @@ public class StudentExcelServiceImpl {
       return null;
     }
   }
+
+
+  /**
+   * 承诺书导出
+   */
+  public void exportUndertaking(Long studentId, String email) throws Exception {
+    Student student = studentRepository.findOne(studentId);
+    if (Objects.isNull(student)) {
+      throw new TorchException("结对受助人为空");
+    }
+    School school = schoolRepository.findOne(student.getSchoolId() == null ? 0l : student.getSchoolId());
+
+    User user = userRepository.findOne(student.getSponsorId() == null ? 0l : student.getSponsorId());
+    List<ReleaseStudent> res = (List<ReleaseStudent>) releaseStudentRepository
+        .findAll(QReleaseStudent.releaseStudent.studentId.eq(studentId));
+
+    InputStream inputStream = new FileInputStream(PhotoPath.EXCEL_TEMP + "\\受助人承诺书.xls");
+//    InputStream inputStream = new FileInputStream( "D:\\受助人承诺书.xls");
+    Workbook workbook = WorkbookFactory.create(inputStream);
+    Sheet sheet = workbook.getSheet("sheet1");
+
+    sheet.getRow(11)
+        .getCell(1)
+        .setCellValue(StringUtils.isBlank(student.getName()) ? "" : student.getName());
+    sheet.getRow(11)
+        .getCell(4)
+        .setCellValue(StringUtils.isBlank(student.getIdentityCard()) ? "" : student.getIdentityCard());
+    sheet.getRow(12)
+        .getCell(1)
+        .setCellValue((school == null || StringUtils.isBlank(school.getSchoolName())) ? "" : school.getSchoolName());
+
+    sheet.getRow(12)
+        .getCell(5)
+        .setCellValue((StringUtils.isBlank(student.getGrade())) ? "" : student.getGrade());
+
+    sheet.getRow(13)
+        .getCell(1)
+        .setCellValue((StringUtils.isBlank(student.getAddress())) ? "" : student.getAddress());
+
+    //联系电话待维护
+
+    sheet.getRow(17)
+        .getCell(1)
+        .setCellValue((user == null || StringUtils.isBlank(user.getName())) ? "" : user.getName());
+
+    sheet.getRow(17)
+        .getCell(4)
+        .setCellValue((user == null || StringUtils.isBlank(user.getMobile())) ? "" : user.getMobile());
+
+    sheet.getRow(18)
+        .getCell(1)
+        .setCellValue((user == null || StringUtils.isBlank(user.getAddress())) ? "" : user.getAddress());
+
+    sheet.getRow(18)
+        .getCell(6)
+        .setCellValue((user == null || StringUtils.isBlank(user.getEmail())) ? "" : user.getEmail());
+
+    sheet.getRow(40)
+        .getCell(1)
+        .setCellValue(new DateTime().toString("yyyy-MM-dd"));
+
+    sheet.getRow(40)
+        .getCell(4)
+        .setCellValue(
+            CollectionUtils.isEmpty(res) ? "" : res.get(0).getNeedMoney()+"");
+
+    sheet.getRow(42)
+        .getCell(3)
+        .setCellValue(
+            StringUtils.isBlank(student.getName())?"":student.getName());
+
+    String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
+//    String path = "D:\\" + new DateTime().getMillis() + ".xls";
+    OutputStream out = new FileOutputStream(path);
+    workbook.write(out);
+    out.close();
+    String[] tops = {email};
+    JavaMailSenderImpl sender = SendMailUtils.initJavaMailSender();
+    SendMailUtils.sendWithAttament(sender, tops, "受助人承诺书打印", "", "受助人承诺书打印.xls", path);
+
+  }
+
 
 }
