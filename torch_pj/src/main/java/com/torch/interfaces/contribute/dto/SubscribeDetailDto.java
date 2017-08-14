@@ -40,6 +40,9 @@ public class SubscribeDetailDto {
   @ApiModelProperty(name = "资助金额", required = true, position = 6)
   private double needMoney;
 
+  @ApiModelProperty(name = "备注", required = true, position = 6)
+  private String remark;
+
   @ApiModelProperty(name = "家访", required = true, position = 7)
   private List<HomeVisitDto> homeVisitDtos;
 

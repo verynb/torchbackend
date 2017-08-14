@@ -95,8 +95,12 @@ public class ReleaseServiceImpl implements ReleaseService {
   @Transient
   public Long updateRelease(UpdateReleaseCommand command) {
     Release release = releaseRepository.findOne(command.getId());
-    if(release==null || release.getStatus()==null || release.getStatus()!=0 || release.getStatus()!=1){
+    if (release == null || release.getStatus() == null || (release.getStatus() != 0 && release.getStatus() != 1)) {
       throw new TorchException("批次已发布不能修改");
+    }
+    long count = releaseStudentRepository.count(QReleaseStudent.releaseStudent.batchId.eq(command.getId()));
+    if(count>0){
+      throw new TorchException("该批次下有学生,暂不能修改");
     }
     release.setCity(command.getCity());
     release.setProvince(command.getProvince());

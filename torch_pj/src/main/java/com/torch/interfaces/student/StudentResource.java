@@ -107,6 +107,7 @@ public class StudentResource {
   @ApiOperation(value = "更新学生", notes = "", httpMethod = "PUT")
   @RequestMapping(path = "/student", method = PUT)
   @ResponseStatus(HttpStatus.OK)
+  @RoleCheck
   public StudentDto updateStudent(@Valid @RequestBody UpdateStudentCommand command) {
     return StudentDto.builder()
         .student(studentService.updateStudent(command))
@@ -215,10 +216,11 @@ public class StudentResource {
         .build();
     List<Creditcredit> creditcredits = creditRepository.findByStudentId(studentId);
     creditcredits.forEach(credit -> {
+      User user = userRepository.findOne(credit.getSponsorId() == null ? 0l : credit.getSponsorId());
       CreditAndRemanRecordListDto dto1 = CreditAndRemanRecordListDto.builder()
           .isCredit(true)
           .money(credit.getMoney())
-          .sponsorName("")
+          .sponsorName(user == null ? "" : user.getName())
           .studentId(credit.getStudentId())
           .time(credit.getCreditTime())
           .build();
@@ -267,12 +269,29 @@ public class StudentResource {
   }
 
   @RoleCheck
-  @ApiOperation(value = "导出学生照片信息", notes = "",  httpMethod = "GET")
+  @ApiOperation(value = "导出学生照片信息", notes = "", httpMethod = "GET")
   @RequestMapping(path = "/studentPhoto/export/{id}", method = GET)
   public ReturnDto exportPhoto(
+      @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id,
+      @RequestParam(required = false) String url) {
+    try {
+      studentExcelService.exportStudentPhoto(id, email,url);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return ReturnDto.builder()
+        .codeMessage(new CodeMessage())
+        .build();
+  }
+
+
+  @RoleCheck
+  @ApiOperation(value = "导出受助人承诺书", notes = "", httpMethod = "GET")
+  @RequestMapping(path = "/undertaking/export/{id}", method = GET)
+  public ReturnDto exportUndertaking(
       @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id) {
     try {
-      studentExcelService.exportStudentPhoto(id, email);
+      studentExcelService.exportUndertaking(id, email);
     } catch (Exception e) {
       e.printStackTrace();
     }
