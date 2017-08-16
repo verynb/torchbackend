@@ -252,6 +252,7 @@ public class ContributeResource {
         .studentAdree(student == null ? "" : student.getAddress())
         .studentAge(student == null ? null : student.getAge())
         .studentName(student == null ? null : student.getName())
+        .subscribed((student == null || student.getSponsorId() == null) ? false : true)
         .build();
   }
 }

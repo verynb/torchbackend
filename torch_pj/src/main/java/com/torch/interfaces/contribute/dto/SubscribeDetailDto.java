@@ -35,6 +35,10 @@ public class SubscribeDetailDto {
 
   @ApiModelProperty(name = "学校", required = true, position = 4)
   private String schoolName;
+
+  @ApiModelProperty(name = "是否已经认捐，true为已经认捐，false为未认捐", required = true, position = 2)
+  private Boolean subscribed;
+
   @ApiModelProperty(name = "发布时间", required = true, position = 5)
   private String releaseTime;
   @ApiModelProperty(name = "资助金额", required = true, position = 6)
