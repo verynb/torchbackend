@@ -38,6 +38,8 @@ public class ReleaseListDto {
 
   private double needMoney;
 
+  private String remark;
+
   @ApiModelProperty(name = "性别", required = true, position = 8)
   private String gender;
 

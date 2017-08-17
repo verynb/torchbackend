@@ -162,7 +162,7 @@ public class ContributeResource {
           .studentName(student == null ? "" : student.getName())
           .subscribeId(cr.getId())
           .subscribeTime(cr.getCreateTime() == null ? "" : cr.getCreateTime().toString("yyyy-MM-dd"))
-          .subscribed((student == null || student.getSponsorId() == null) ? false : true)
+          .subscribed((student == null || student.getSponsorId() == null || student.getSponsorId()==0l) ? false : true)
           .build();
       subscribeDtos.add(dto);
     });
@@ -252,7 +252,7 @@ public class ContributeResource {
         .studentAdree(student == null ? "" : student.getAddress())
         .studentAge(student == null ? null : student.getAge())
         .studentName(student == null ? null : student.getName())
-        .subscribed((student == null || student.getSponsorId() == null) ? false : true)
+        .subscribed((student == null || student.getSponsorId() == null || student.getSponsorId()==0l) ? false : true)
         .build();
   }
 }

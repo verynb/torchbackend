@@ -418,6 +418,7 @@ public class ReleaseResource {
         .address(student.getAddress())
         .age(student.getAge())
         .area(student.getArea())
+        .remark(releaseStudent.getRemark())
         .birthday(student.getBirthday())
         .sCity(student.getCity())
         .sProvince(student.getProvince())
