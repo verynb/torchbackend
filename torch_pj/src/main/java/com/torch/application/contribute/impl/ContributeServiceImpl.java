@@ -85,7 +85,12 @@ public class ContributeServiceImpl implements ContributeService {
     if (contributeMap == null) {
       contributeMap = Maps.newConcurrentMap();
       Map<String, String> map = redisUtils.getMap(batchId.toString());
-      contributeMap.putAll(map);
+      map.forEach((k,v) ->{
+        if(v.equals("0")){
+          contributeMap.put(k,v);
+        }
+      });
+//      contributeMap.putAll(map);
       if (isContributed()) {
         throw new TorchException("此批次学生已经全部认捐");
       }
