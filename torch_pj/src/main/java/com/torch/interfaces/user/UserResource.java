@@ -135,10 +135,15 @@ public class UserResource {
   @RequestMapping(path = "/user/volunteers", method = GET)
   public VolunteerListDto getVolunteers(
       @ApiParam(value = "分页条数") @RequestParam(required = false, defaultValue = "15") Integer pageSize,
-      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage
+      @ApiParam(value = "当前页") @RequestParam(required = false, defaultValue = "0") Integer currentPage,
+      @ApiParam(value = "姓名") @RequestParam(required = false) String name
   ) {
     Pageable pageable = new PageRequest(currentPage, pageSize);
-    Page<User> page = userRepository.findAll(QUser.user.type.eq(0), pageable);
+    BooleanBuilder conditions = new BooleanBuilder(QUser.user.type.eq(0));
+    if(StringUtils.isNotBlank(name)){
+      conditions.and(QUser.user.name.contains(name));
+    }
+    Page<User> page = userRepository.findAll(conditions, pageable);
     List<VolunteerDetailResultDto> dtos = Lists.newArrayList();
     if (CollectionUtils.isNotEmpty(page.getContent())) {
       page.getContent().forEach(user -> {
@@ -199,7 +204,8 @@ public class UserResource {
   public SponsorListDto getSponsors(
       @ApiParam(value = "分页条数") @RequestParam(required = false) Integer pageSize,
       @ApiParam(value = "当前页") @RequestParam(required = false) Integer currentPage,
-      @ApiParam(value = "手机号")@RequestParam(required = false) String phone
+      @ApiParam(value = "手机号")@RequestParam(required = false) String phone,
+      @ApiParam(value = "姓名") @RequestParam(required = false) String name
   ) {
     Pageable pageable = null;
     if (pageSize != null && pageSize != 0 && currentPage != null && currentPage != 0) {
@@ -208,6 +214,9 @@ public class UserResource {
     BooleanBuilder conditions = new BooleanBuilder(QUser.user.type.eq(1));
     if(StringUtils.isNotBlank(phone)){
       conditions.and(QUser.user.mobile.eq(phone));
+    }
+    if(StringUtils.isNotBlank(name)){
+      conditions.and(QUser.user.name.contains(name));
     }
     Page<User> page = userRepository.findAll(conditions, pageable);
     List<SponsorDetailResultDto> dtos = Lists.newArrayList();

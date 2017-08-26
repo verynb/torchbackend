@@ -105,7 +105,10 @@ public class SchoolResource {
   public SchoolListDto getVolunteers(
       @ApiParam(value = "分页条数") @RequestParam(required = false) int pageSize,
       @ApiParam(value = "当前页") @RequestParam(required = false) int currentPage,
-      @ApiParam(value = "学校名称") @RequestParam(required = false) String schoolName
+      @ApiParam(value = "学校名称") @RequestParam(required = false) String schoolName,
+      @ApiParam(value = "省") @RequestParam(required = false) String province,
+      @ApiParam(value = "市") @RequestParam(required = false) String city,
+      @ApiParam(value = "负责人姓名") @RequestParam(required = false) String leaderName
   ) {
 
     Pageable pageable = null;
@@ -116,6 +119,15 @@ public class SchoolResource {
     conditions.and(QSchool.school.isNotNull());
     if(StringUtils.isNotBlank(schoolName)){
       conditions.and(QSchool.school.schoolName.eq(schoolName));
+    }
+    if(StringUtils.isNotBlank(province)){
+      conditions.and(QSchool.school.province.contains(province));
+    }
+    if(StringUtils.isNotBlank(city)){
+      conditions.and(QSchool.school.city.contains(city));
+    }
+    if(StringUtils.isNotBlank(leaderName)){
+      conditions.and(QSchool.school.leaderName.contains(leaderName));
     }
     Page<School> page = schoolRepository.findAll(conditions, pageable);
     return SchoolListDto.builder()

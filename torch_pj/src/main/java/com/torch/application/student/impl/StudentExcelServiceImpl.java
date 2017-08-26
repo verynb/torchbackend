@@ -277,6 +277,15 @@ public class StudentExcelServiceImpl {
         .getCell(1)
         .setCellValue((StringUtils.isBlank(student.getAddress())) ? "" : student.getAddress());
 
+    sheet.getRow(14)
+            .getCell(1)
+            .setCellValue("");
+
+    sheet.getRow(14)
+            .getCell(5)
+            .setCellValue("");
+
+
     //联系电话待维护
 
     sheet.getRow(17)
