@@ -34,6 +34,8 @@ import java.beans.Transient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -130,6 +132,7 @@ public class ContributeServiceImpl implements ContributeService {
     });
     Student student = studentRepository.findOne(dto.getStudentId());
     student.setSponsorId(0L);
+    student.setStatus(0);
     studentRepository.save(student);
   }
 
@@ -144,6 +147,12 @@ public class ContributeServiceImpl implements ContributeService {
         .remark(dto.getRemark())
         .build();
     remittanceRepository.save(remittance);
+    Student student = studentRepository.findOne(dto.getStudentId());
+    if(!Objects.isNull(student)){
+      student.setStatus(6);
+      studentRepository.save(student);
+    }
+
   }
 
   private boolean isContributed() {
