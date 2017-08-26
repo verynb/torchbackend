@@ -17,6 +17,8 @@ public class StudentSearchDto {
   private Integer currentPage;
   @ApiModelProperty(name = "学生姓名", required = true, position = 1)
   private String name;
+  @ApiModelProperty(name = "编号", required = true, position = 2)
+  private String sNo;
   @ApiModelProperty(name = "身份证", required = true, position = 2)
   private String identityCard;
   @ApiModelProperty(name = "学校ID", required = true, position = 3)
@@ -25,7 +27,10 @@ public class StudentSearchDto {
   public Predicate toPredicate(){
     BooleanBuilder conditions = new BooleanBuilder();
     if(StringUtils.isNotBlank(getName())){
-      conditions.and(QStudent.student.name.eq(getName()));
+      conditions.and(QStudent.student.name.contains(getName()));
+    }
+    if(StringUtils.isNotBlank(getsNo())){
+      conditions.and(QStudent.student.sNo.eq(getsNo()));
     }
     if(StringUtils.isNotBlank(getIdentityCard())){
       conditions.and(QStudent.student.identityCard.eq(getIdentityCard()));
@@ -34,5 +39,11 @@ public class StudentSearchDto {
       conditions.and(QStudent.student.schoolId.eq(getSchoolId()));
     }
     return conditions;
+  }
+  public String getsNo() {
+    return sNo;
+  }
+  public void setsNo(String sNo) {
+    this.sNo = sNo;
   }
 }
