@@ -3,9 +3,13 @@ package com.torch.interfaces.student;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.torch.domain.model.student.QStudent;
+import com.torch.domain.model.user.TeacherSchool;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
 import java.util.Objects;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -24,7 +28,7 @@ public class StudentSearchDto {
   @ApiModelProperty(name = "学校ID", required = true, position = 3)
   private Long schoolId;
 
-  public Predicate toPredicate(){
+  public Predicate toPredicate(List<TeacherSchool> ts){
     BooleanBuilder conditions = new BooleanBuilder();
     if(StringUtils.isNotBlank(getName())){
       conditions.and(QStudent.student.name.contains(getName()));
@@ -37,6 +41,13 @@ public class StudentSearchDto {
     }
     if(!Objects.isNull(getSchoolId())){
       conditions.and(QStudent.student.schoolId.eq(getSchoolId()));
+    }
+    if(CollectionUtils.isNotEmpty(ts)){
+      BooleanBuilder booleanBuilder = new BooleanBuilder();
+      for(TeacherSchool t:ts){
+        booleanBuilder.or(QStudent.student.schoolId.eq(t.getSchoolId()));
+      }
+      conditions.and(booleanBuilder);
     }
     return conditions;
   }

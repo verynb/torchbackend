@@ -119,7 +119,7 @@ public class StudentDetail {
   private String gradeCode;
   //当前资助人
   @ApiModelProperty(name = "当前资助人ID", required = true, position = 13)
-  private String sponsorId;
+  private Long sponsorId;
 
   @ApiModelProperty(name = "当前资助人名字", required = true, position = 13)
   private String sponsorName;
@@ -310,11 +310,11 @@ public class StudentDetail {
     this.gradeCode = gradeCode;
   }
 
-  public String getSponsorId() {
+  public Long getSponsorId() {
     return sponsorId;
   }
 
-  public void setSponsorId(String sponsorId) {
+  public void setSponsorId(Long sponsorId) {
     this.sponsorId = sponsorId;
   }
 
