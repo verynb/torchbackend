@@ -30,6 +30,7 @@ import com.torch.interfaces.contribute.dto.CancelSubscribeDto;
 import com.torch.interfaces.contribute.dto.CreateRemittanceDto;
 import com.torch.interfaces.homeVisit.dto.CreateHomeVisitCommand;
 import com.torch.util.cache.RedisUtils;
+
 import java.beans.Transient;
 import java.util.HashMap;
 import java.util.List;
@@ -49,156 +50,145 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContributeServiceImpl implements ContributeService {
 
-  private Map<String, String> contributeMap = null;
+    private Map<String, String> contributeMap = null;
 
-  private final RedisUtils redisUtils;
-  private final ContributeRecordRepository contributeRecordRepository;
+    private final RedisUtils redisUtils;
+    private final ContributeRecordRepository contributeRecordRepository;
 
-  private final StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
 
-  private final ReleaseRepository releaseRepository;
+    private final ReleaseRepository releaseRepository;
 
-  private final RemittanceRepository remittanceRepository;
+    private final RemittanceRepository remittanceRepository;
 
-  private final ReleaseStudentRepository releaseStudentRepository;
+    private final ReleaseStudentRepository releaseStudentRepository;
 
 
-  @Autowired
-  public ContributeServiceImpl(final RedisUtils redisUtils,
-      final ContributeRecordRepository contributeRecordRepository,
-      final StudentRepository studentRepository,
-      final ReleaseRepository releaseRepository,
-      final RemittanceRepository remittanceRepository,
-      final ReleaseStudentRepository releaseStudentRepository) {
-    this.redisUtils = redisUtils;
-    this.contributeRecordRepository = contributeRecordRepository;
-    this.studentRepository = studentRepository;
-    this.releaseRepository = releaseRepository;
-    this.remittanceRepository = remittanceRepository;
-    this.releaseStudentRepository = releaseStudentRepository;
-  }
+    @Autowired
+    public ContributeServiceImpl(final RedisUtils redisUtils,
+                                 final ContributeRecordRepository contributeRecordRepository,
+                                 final StudentRepository studentRepository,
+                                 final ReleaseRepository releaseRepository,
+                                 final RemittanceRepository remittanceRepository,
+                                 final ReleaseStudentRepository releaseStudentRepository) {
+        this.redisUtils = redisUtils;
+        this.contributeRecordRepository = contributeRecordRepository;
+        this.studentRepository = studentRepository;
+        this.releaseRepository = releaseRepository;
+        this.remittanceRepository = remittanceRepository;
+        this.releaseStudentRepository = releaseStudentRepository;
+    }
 
-  /**
-   * 认捐接口
-   */
-  @Override
-  @Transient
-  public synchronized void contribute(Long batchId, List<Long> studentIds) {
-    if (contributeMap == null) {
-      contributeMap = Maps.newConcurrentMap();
-      Map<String, String> map = redisUtils.getMap(batchId.toString());
-      map.forEach((k,v) ->{
-        if(v.equals("0")){
-          contributeMap.put(k,v);
+    /**
+     * 认捐接口
+     */
+    @Override
+    @Transient
+    public synchronized void contribute(Long batchId, List<Long> studentIds) {
+        Map<String, String> map = redisUtils.getMap(batchId.toString());
+        if (isContributed(map)) {
+            throw new TorchException("此批次学生已经全部认捐");
         }
-      });
-//      contributeMap.putAll(map);
-      if (isContributed()) {
-        throw new TorchException("此批次学生已经全部认捐");
-      }
+        studentIds.forEach(studentId -> {
+            String contribute = map.get(studentId.toString());
+            if (StringUtils.isNotBlank(contribute) && contribute.equals("0")) {
+                redisUtils.putKeys(batchId.toString(), studentId.toString(), "1");
+                createContributedRecord(studentId, Session.getUserId(), batchId);
+                updateStudentContribute(studentId, Session.getUserId());
+                updateReleaseStudent(studentId, batchId);
+            } else {
+                Student student = studentRepository.findOne(studentId);
+                throw new TorchException(student == null ? "" : student.getName() + "已经认捐");
+            }
+        });
+        if (isContributed(map)) {
+            //更新发布状态
+            Release release = releaseRepository.findOne(batchId);
+            if (release != null) {
+                release.setStatus(4);
+                releaseRepository.save(release);
+            }
+        }
     }
-    studentIds.forEach(studentId -> {
-      String contribute = contributeMap.get(studentId.toString());
-      if (StringUtils.isNotBlank(contribute) && contribute.equals("0")) {
-        contributeMap.put(studentId.toString(), "1");
-        redisUtils.putKeys(batchId.toString(), studentId.toString(), "1");
-        createContributedRecord(studentId, Session.getUserId(), batchId);
-        updateStudentContribute(studentId, Session.getUserId());
-        updateReleaseStudent(studentId, batchId);
-      } else {
+
+    @Override
+    @Transient
+    public void cancelContribute(CancelSubscribeDto dto) {
+        List<ContributeRecord> crs = (List<ContributeRecord>) contributeRecordRepository
+                .findAll(QContributeRecord.contributeRecord.studentId.eq(dto.getStudentId()));
+        crs.forEach(cr -> {
+            cr.setAbleRemit(false);
+            contributeRecordRepository.save(cr);
+        });
+        Student student = studentRepository.findOne(dto.getStudentId());
+        student.setSponsorId(0L);
+        student.setStatus(0);
+        studentRepository.save(student);
+    }
+
+    @Override
+    @Transient
+    public void createRemittance(CreateRemittanceDto dto) {
+        Remittance remittance = Remittance.builder()
+                .contributeId(dto.getContributeId())
+                .remittanceMoney(dto.getRemittanceMoney())
+                .remittanceTime(new DateTime())
+                .studentId(dto.getStudentId())
+                .remark(dto.getRemark())
+                .build();
+        remittanceRepository.save(remittance);
+        Student student = studentRepository.findOne(dto.getStudentId());
+        if (!Objects.isNull(student)) {
+            student.setStatus(6);
+            studentRepository.save(student);
+        }
+
+    }
+
+    private boolean isContributed(Map<String, String> map) {
+        List<String> values = Lists.newArrayList();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            values.add(entry.getValue());
+        }
+        if (values.stream()
+                .filter(value -> value.equals("0"))
+                .count() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Transient
+    private void createContributedRecord(Long studentId, Long contributeId, Long batchId) {
+        ContributeRecord c = ContributeRecord.builder()
+                .batchId(batchId)
+                .contributeId(contributeId)
+                .studentId(studentId)
+                .ableRemit(true)
+                .build();
+        c.setCreateTime(new DateTime());
+        contributeRecordRepository.save(c);
+    }
+
+    @Transient
+    private void updateStudentContribute(Long studentId, Long contributeId) {
         Student student = studentRepository.findOne(studentId);
-        throw new TorchException(student == null ? "" : student.getName() + "已经认捐");
-      }
-    });
-    if (isContributed()) {
-      contributeMap = null;
-      //更新发布状态
-      Release release = releaseRepository.findOne(batchId);
-      if (release != null) {
-        release.setStatus(4);
-        releaseRepository.save(release);
-      }
-    }
-  }
-
-  @Override
-  @Transient
-  public void cancelContribute(CancelSubscribeDto dto) {
-    List<ContributeRecord> crs = (List<ContributeRecord>) contributeRecordRepository
-        .findAll(QContributeRecord.contributeRecord.studentId.eq(dto.getStudentId()));
-    crs.forEach(cr -> {
-      cr.setAbleRemit(false);
-      contributeRecordRepository.save(cr);
-    });
-    Student student = studentRepository.findOne(dto.getStudentId());
-    student.setSponsorId(0L);
-    student.setStatus(0);
-    studentRepository.save(student);
-  }
-
-  @Override
-  @Transient
-  public void createRemittance(CreateRemittanceDto dto) {
-    Remittance remittance = Remittance.builder()
-        .contributeId(dto.getContributeId())
-        .remittanceMoney(dto.getRemittanceMoney())
-        .remittanceTime(new DateTime())
-        .studentId(dto.getStudentId())
-        .remark(dto.getRemark())
-        .build();
-    remittanceRepository.save(remittance);
-    Student student = studentRepository.findOne(dto.getStudentId());
-    if(!Objects.isNull(student)){
-      student.setStatus(6);
-      studentRepository.save(student);
+        if (student != null) {
+            student.setSponsorId(contributeId);
+            student.setStatus(5);
+            studentRepository.save(student);
+        }
     }
 
-  }
-
-  private boolean isContributed() {
-    List<String> values = Lists.newArrayList();
-    for (Map.Entry<String, String> entry : contributeMap.entrySet()) {
-      values.add(entry.getValue());
+    @Transient
+    private void updateReleaseStudent(Long studentId, Long bathId) {
+        List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository.findAll(
+                QReleaseStudent.releaseStudent.batchId.eq(bathId).and(QReleaseStudent.releaseStudent.studentId.eq(studentId)));
+        releaseStudents.forEach(releaseStudent -> {
+            releaseStudent.setStatus(5);
+            releaseStudentRepository.save(releaseStudent);
+        });
     }
-    if (values.stream()
-        .filter(value -> value.equals("0"))
-        .count() == 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  @Transient
-  private void createContributedRecord(Long studentId, Long contributeId, Long batchId) {
-    ContributeRecord c = ContributeRecord.builder()
-        .batchId(batchId)
-        .contributeId(contributeId)
-        .studentId(studentId)
-        .ableRemit(true)
-        .build();
-    c.setCreateTime(new DateTime());
-    contributeRecordRepository.save(c);
-  }
-
-  @Transient
-  private void updateStudentContribute(Long studentId, Long contributeId) {
-    Student student = studentRepository.findOne(studentId);
-    if (student != null) {
-      student.setSponsorId(contributeId);
-      student.setStatus(5);
-      studentRepository.save(student);
-    }
-  }
-
-  @Transient
-  private void updateReleaseStudent(Long studentId, Long bathId) {
-    List<ReleaseStudent> releaseStudents = (List<ReleaseStudent>) releaseStudentRepository.findAll(
-        QReleaseStudent.releaseStudent.batchId.eq(bathId).and(QReleaseStudent.releaseStudent.studentId.eq(studentId)));
-    releaseStudents.forEach(releaseStudent -> {
-      releaseStudent.setStatus(5);
-      releaseStudentRepository.save(releaseStudent);
-    });
-  }
 
 }
