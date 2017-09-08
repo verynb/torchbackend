@@ -130,6 +130,16 @@ public class AddStudentCommand{
 
   private String other;
 
+  //学生新增一下字段
+  @ApiModelProperty(name = "家庭人员构成及身体状况", required = true, position = 11)
+  private String familyComposition;
+
+  @ApiModelProperty(name = "家庭人员经济", required = true, position = 11)
+  private String familyEconomy;
+
+  @ApiModelProperty(name = "学习状况", required = true, position = 11)
+  private String learningStatus;
+
   public String getHeadPhoto() {
     return headPhoto;
   }

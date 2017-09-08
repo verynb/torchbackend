@@ -131,6 +131,17 @@ public class UpdateStudentCommand {
 
   private String other;
 
+  //学生新增一下字段
+  @ApiModelProperty(name = "家庭人员构成及身体状况", required = true, position = 11)
+  private String familyComposition;
+
+  @ApiModelProperty(name = "家庭人员经济", required = true, position = 11)
+  private String familyEconomy;
+
+  @ApiModelProperty(name = "学习状况", required = true, position = 11)
+  private String learningStatus;
+
+
   public Long getId() {
     return id;
   }
@@ -305,5 +316,29 @@ public class UpdateStudentCommand {
 
   public void setOther(String other) {
     this.other = other;
+  }
+
+  public String getFamilyComposition() {
+    return familyComposition;
+  }
+
+  public void setFamilyComposition(String familyComposition) {
+    this.familyComposition = familyComposition;
+  }
+
+  public String getFamilyEconomy() {
+    return familyEconomy;
+  }
+
+  public void setFamilyEconomy(String familyEconomy) {
+    this.familyEconomy = familyEconomy;
+  }
+
+  public String getLearningStatus() {
+    return learningStatus;
+  }
+
+  public void setLearningStatus(String learningStatus) {
+    this.learningStatus = learningStatus;
   }
 }

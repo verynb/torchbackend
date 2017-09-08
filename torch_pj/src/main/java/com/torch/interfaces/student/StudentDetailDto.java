@@ -99,6 +99,7 @@ public class StudentDetailDto {
   @ApiModelProperty(name = "状态{0.正常,1.结案,2.冻结}", required = true, position = 14)
   private Integer status;
 
+
   public String getsNo() {
     return sNo;
   }

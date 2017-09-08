@@ -5,6 +5,7 @@
 package com.torch.domain.model.student;
 
 import com.torch.domain.model.common.IdEntity;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -120,9 +121,16 @@ public class Student extends IdEntity implements Serializable {
 
   private String other;
 
-  public static long getSerialVersionUID() {
-    return serialVersionUID;
-  }
+  //学生新增一下字段
+  @ApiModelProperty(name = "家庭人员构成及身体状况", required = true, position = 11)
+  private String familyComposition;
+
+  @ApiModelProperty(name = "家庭人员经济", required = true, position = 11)
+  private String familyEconomy;
+
+  @ApiModelProperty(name = "学习状况", required = true, position = 11)
+  private String learningStatus;
+
 
   public String getHeadPhoto() {
     return headPhoto;

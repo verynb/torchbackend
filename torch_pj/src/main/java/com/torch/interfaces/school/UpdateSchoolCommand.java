@@ -66,6 +66,19 @@ public class UpdateSchoolCommand {
   @ApiModelProperty(name = "负责人电话", required = true, position = 10)
   private String mobile;
 
+  //对接人信息
+  @ApiModelProperty(name = "对接人姓名", required = true, position = 6)
+  private String buttName;
+
+  @ApiModelProperty(name = "对接人QQ", required = true, position = 7)
+  private String buttqq;
+
+  @ApiModelProperty(name = "对接人邮箱", required = true, position = 8)
+  private String buttEmail;
+
+  @ApiModelProperty(name = "对接人电话", required = true, position = 9)
+  private String buttMobile;
+
   @ApiModelProperty(name = "备注", required = true, position = 11)
   private String remark;
 }

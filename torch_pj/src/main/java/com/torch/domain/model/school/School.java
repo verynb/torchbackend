@@ -5,6 +5,7 @@
 package com.torch.domain.model.school;
 
 import com.torch.domain.model.common.IdEntity;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -56,6 +57,19 @@ public class School extends IdEntity implements Serializable {
   private String email;
 
   private String mobile;
+
+  //对接人信息
+  @ApiModelProperty(name = "对接人姓名", required = true, position = 6)
+  private String buttName;
+
+  @ApiModelProperty(name = "对接人QQ", required = true, position = 7)
+  private String buttqq;
+
+  @ApiModelProperty(name = "对接人邮箱", required = true, position = 8)
+  private String buttEmail;
+
+  @ApiModelProperty(name = "对接人电话", required = true, position = 9)
+  private String buttMobile;
 
   private String remark;
 
