@@ -49,4 +49,11 @@ public class SponsorAddCommand {
   @ApiModelProperty(value = "头像", required = false)
   private String photo;
 
+  //新增如下字段
+  @ApiModelProperty(value = "性别，（m-男，w-女）", required = false)
+  private String gender;
+
+  @ApiModelProperty(value = "备注", required = false)
+  private String remark;
+
 }

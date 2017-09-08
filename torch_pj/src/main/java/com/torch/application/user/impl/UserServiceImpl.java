@@ -160,6 +160,8 @@ public class UserServiceImpl implements UserService {
     user.setPhoto(command.getPhoto());
     user.setQq(command.getQq());
     user.setRoleId(command.getRoleId());
+    user.setRemark(command.getRemark());
+    user.setGender(command.getGender());
     userRepository.save(user);
   }
 
