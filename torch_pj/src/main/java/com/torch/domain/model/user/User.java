@@ -5,6 +5,7 @@
 package com.torch.domain.model.user;
 
 import com.torch.util.Util;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -100,6 +101,19 @@ public class User extends IdEntity implements Serializable {
   public DateTime getJoinTime() {
     return joinTime;
   }
+
+
+  //义工新增如下字段
+  @ApiModelProperty(value = "性别，（m-男，w-女）", required = false)
+  private String gender;
+
+  @ApiModelProperty(value = "特长", required = false)
+  private String speciality;
+
+  @ApiModelProperty(value = "备注", required = false)
+  private String remark;
+
+
 
 
   public void setEncryptPassword(String password) {
@@ -224,5 +238,29 @@ public class User extends IdEntity implements Serializable {
 
   public void setJoinTime(DateTime joinTime) {
     this.joinTime = joinTime;
+  }
+
+  public String getGender() {
+    return gender;
+  }
+
+  public void setGender(String gender) {
+    this.gender = gender;
+  }
+
+  public String getSpeciality() {
+    return speciality;
+  }
+
+  public void setSpeciality(String speciality) {
+    this.speciality = speciality;
+  }
+
+  public String getRemark() {
+    return remark;
+  }
+
+  public void setRemark(String remark) {
+    this.remark = remark;
   }
 }

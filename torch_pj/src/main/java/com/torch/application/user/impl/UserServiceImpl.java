@@ -118,6 +118,9 @@ public class UserServiceImpl implements UserService {
     user.setPhoto(command.getPhoto());
     user.setQq(command.getQq());
     user.setRoleId(command.getRoleId());
+    user.setGender(command.getGender());
+    user.setSpeciality(command.getSpeciality());
+    user.setRemark(command.getRemark());
     userRepository.save(user);
     if (CollectionUtils.isNotEmpty(command.getSchoolIds())) {
       List<TeacherSchool> tss = (List<TeacherSchool>) teacherSchoolRepository

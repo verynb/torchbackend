@@ -55,4 +55,13 @@ public class VolunteerDetailResultDto {
 	@ApiModelProperty(value = "头像", required = true)
 	private String photo;
 
+	//新增如下字段
+	@ApiModelProperty(value = "性别，（m-男，w-女）", required = false)
+	private String gender;
+
+	@ApiModelProperty(value = "特长", required = false)
+	private String speciality;
+
+	@ApiModelProperty(value = "备注", required = false)
+	private String remark;
 }

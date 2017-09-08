@@ -14,7 +14,7 @@ public class VolunteerAddCommand {
   @ApiModelProperty(value = "姓名", required = false)
   private String name;
 
-  @ApiModelProperty(value = "网名", required = false)
+  @ApiModelProperty(value = "称呼", required = false)
   private String netName;
 
   @ApiModelProperty(value = "年龄", required = false)
@@ -56,5 +56,14 @@ public class VolunteerAddCommand {
   @ApiModelProperty(value = "学校IDS", required = false)
   private List<Long> schoolIds;
 
+  //新增如下字段
+  @ApiModelProperty(value = "性别，（m-男，w-女）", required = false)
+  private String gender;
+
+  @ApiModelProperty(value = "特长", required = false)
+  private String speciality;
+
+  @ApiModelProperty(value = "备注", required = false)
+  private String remark;
 
 }
