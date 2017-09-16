@@ -119,6 +119,8 @@ public class Student extends IdEntity implements Serializable {
    */
   private Integer status;
 
+  private Boolean approval;//true为通过,false为末通过
+
   private String other;
 
   //学生新增一下字段
@@ -340,5 +342,13 @@ public class Student extends IdEntity implements Serializable {
 
   public void setFamilyPhone(String familyPhone) {
     this.familyPhone = familyPhone;
+  }
+
+  public Boolean getApproval() {
+    return approval;
+  }
+
+  public void setApproval(Boolean approval) {
+    this.approval = approval;
   }
 }

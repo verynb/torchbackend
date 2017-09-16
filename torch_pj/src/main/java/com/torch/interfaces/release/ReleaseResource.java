@@ -220,6 +220,17 @@ public class ReleaseResource {
   }
 
   @RoleCheck
+  @ApiOperation(value = "删除发布", notes = "", httpMethod = "DELETE")
+  @RequestMapping(path = "/release/{id}", method = DELETE)
+  @ResponseStatus(HttpStatus.OK)
+  public ReturnDto deleteRelease(@PathVariable("id") Long id) {
+    releaseService.deleteRelease(id);
+    return ReturnDto.builder()
+            .codeMessage(new CodeMessage())
+            .build();
+  }
+
+  @RoleCheck
   @ApiOperation(value = "发布批次", notes = "", httpMethod = "PUT")
   @RequestMapping(path = "/release/{batchId}", method = PUT)
   public ReturnDto release(@PathVariable("batchId") Long batchId,

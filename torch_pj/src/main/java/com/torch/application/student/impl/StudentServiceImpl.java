@@ -126,6 +126,8 @@ public class StudentServiceImpl implements StudentService {
         Page<Student> page = studentRepository.findAll(conditions, pageable);
         if (CollectionUtils.isNotEmpty(page.getContent())) {
             page.getContent().forEach(student -> {
+                if (student.getApproval() != null && student.getApproval().equals(false))
+                    return;
                 list.add(toDetailDto(student));
             });
         }
@@ -137,7 +139,7 @@ public class StudentServiceImpl implements StudentService {
                                                  StudentSearchDto dto) {
         User user = userRepository.findOne(Session.getUserId());
         DictVolunteerRole role = dictVolunteerRoleRepository.findOne(user == null ? 0l : user.getRoleId());
-        List<TeacherSchool> tschools=Lists.newArrayList();
+        List<TeacherSchool> tschools = Lists.newArrayList();
         if (role != null && role.getRoleCode().equals("teacher")) {
             tschools = (List<TeacherSchool>) teacherSchoolRepository.findAll(QTeacherSchool.teacherSchool.techerId.eq(user.getId()));
         }
@@ -146,7 +148,7 @@ public class StudentServiceImpl implements StudentService {
         Page<Student> page = studentRepository
                 .findAll(dto == null ? null : dto.toPredicate(tschools), pageable);
         if (CollectionUtils.isNotEmpty(page.getContent())) {
-            for(Student student:page.getContent()){
+            for (Student student : page.getContent()) {
                 list.add(toDetailDto(student));
             }
         }

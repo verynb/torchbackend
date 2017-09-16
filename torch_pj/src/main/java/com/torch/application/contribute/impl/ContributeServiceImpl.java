@@ -93,7 +93,7 @@ public class ContributeServiceImpl implements ContributeService {
             String contribute = map.get(studentId.toString());
             if (StringUtils.isNotBlank(contribute) && contribute.equals("0")) {
                 redisUtils.putKeys(batchId.toString(), studentId.toString(), "1");
-                map.put(studentId.toString(),"1");
+                map.put(studentId.toString(), "1");
                 createContributedRecord(studentId, Session.getUserId(), batchId);
                 updateStudentContribute(studentId, Session.getUserId());
                 updateReleaseStudent(studentId, batchId);
@@ -117,13 +117,27 @@ public class ContributeServiceImpl implements ContributeService {
     public void cancelContribute(CancelSubscribeDto dto) {
         List<ContributeRecord> crs = (List<ContributeRecord>) contributeRecordRepository
                 .findAll(QContributeRecord.contributeRecord.studentId.eq(dto.getStudentId()));
-        crs.forEach(cr -> {
+        Long bathId = 0l;
+        for (ContributeRecord cr : crs) {
             cr.setAbleRemit(false);
             contributeRecordRepository.save(cr);
-        });
+            bathId = cr.getBatchId();
+        }
         Student student = studentRepository.findOne(dto.getStudentId());
+        Release release = releaseRepository.findOne(bathId);
+        if (release != null && release.getStatus() != 4) {
+            student.setStatus(4);
+            List<ReleaseStudent> rss = (List<ReleaseStudent>) releaseStudentRepository.findAll(QReleaseStudent.releaseStudent.batchId.eq(release.getId())
+                    .and(QReleaseStudent.releaseStudent.studentId.eq(student.getId())));
+            if (CollectionUtils.isNotEmpty(rss)) {
+                rss.get(0).setStatus(4);
+                releaseStudentRepository.save(rss.get(0));
+                redisUtils.putKeys(release.getId().toString(), student.getId().toString(), "0");
+            }
+        } else {
+            student.setStatus(0);
+        }
         student.setSponsorId(0L);
-        student.setStatus(0);
         studentRepository.save(student);
     }
 
