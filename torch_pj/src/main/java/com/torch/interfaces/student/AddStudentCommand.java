@@ -140,6 +140,9 @@ public class AddStudentCommand{
   @ApiModelProperty(name = "学习状况", required = true, position = 11)
   private String learningStatus;
 
+  @ApiModelProperty(name = "家庭联系电话", required = true, position = 11)
+  private String familyPhone;
+
   public String getHeadPhoto() {
     return headPhoto;
   }
@@ -306,5 +309,37 @@ public class AddStudentCommand{
 
   public void setOther(String other) {
     this.other = other;
+  }
+
+  public String getFamilyComposition() {
+    return familyComposition;
+  }
+
+  public void setFamilyComposition(String familyComposition) {
+    this.familyComposition = familyComposition;
+  }
+
+  public String getFamilyEconomy() {
+    return familyEconomy;
+  }
+
+  public void setFamilyEconomy(String familyEconomy) {
+    this.familyEconomy = familyEconomy;
+  }
+
+  public String getLearningStatus() {
+    return learningStatus;
+  }
+
+  public void setLearningStatus(String learningStatus) {
+    this.learningStatus = learningStatus;
+  }
+
+  public String getFamilyPhone() {
+    return familyPhone;
+  }
+
+  public void setFamilyPhone(String familyPhone) {
+    this.familyPhone = familyPhone;
   }
 }

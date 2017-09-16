@@ -141,6 +141,8 @@ public class UpdateStudentCommand {
   @ApiModelProperty(name = "学习状况", required = true, position = 11)
   private String learningStatus;
 
+  @ApiModelProperty(name = "家庭联系电话", required = true, position = 11)
+  private String familyPhone;
 
   public Long getId() {
     return id;
