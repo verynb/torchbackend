@@ -3,6 +3,8 @@ package com.torch.application.user.impl;
 import com.torch.domain.model.user.QTeacherSchool;
 import com.torch.domain.model.user.TeacherSchool;
 import com.torch.domain.model.user.TeacherSchoolRepository;
+import com.torch.interfaces.common.exceptions.TorchException;
+import com.torch.interfaces.common.security.Session;
 import com.torch.interfaces.user.command.SponsorAddCommand;
 import com.torch.interfaces.user.command.SponsorUpdateCommand;
 import com.torch.interfaces.user.command.VolunteerAddCommand;
@@ -52,6 +54,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public Long addVolunteer(VolunteerAddCommand command) {
     User user = new User();
+    if(command.getStatus()==null){
+      command.setStatus(0);
+    }
     BeanUtils.copyProperties(command, user);
     user.setEncryptPassword(command.getPassword());
     if (StringUtils.isNotBlank(command.getJoinTime())) {
@@ -121,6 +126,7 @@ public class UserServiceImpl implements UserService {
     user.setGender(command.getGender());
     user.setSpeciality(command.getSpeciality());
     user.setRemark(command.getRemark());
+    user.setStatus(command.getStatus());
     userRepository.save(user);
     if (CollectionUtils.isNotEmpty(command.getSchoolIds())) {
       List<TeacherSchool> tss = (List<TeacherSchool>) teacherSchoolRepository
@@ -140,6 +146,12 @@ public class UserServiceImpl implements UserService {
   @Override
   public void updateSponsor(SponsorUpdateCommand command) {
     User user = userRepository.findOne(command.getId());
+    if(command.getId()== Session.getUserId()){
+      //本人修改,名字不可变
+      if(!command.getName().equals(user.getName())){
+        throw new TorchException("姓名不可变");
+      }
+    }
     user.setLastUpdateTime(new DateTime());
     user.setAddress(command.getAddress());
     user.setAge(command.getAge());

@@ -113,6 +113,8 @@ public class User extends IdEntity implements Serializable {
   @ApiModelProperty(value = "备注", required = false)
   private String remark;
 
+  private Integer status;//0正常1冻结
+
 
 
 
@@ -262,5 +264,13 @@ public class User extends IdEntity implements Serializable {
 
   public void setRemark(String remark) {
     this.remark = remark;
+  }
+
+  public Integer getStatus() {
+    return status;
+  }
+
+  public void setStatus(Integer status) {
+    this.status = status;
   }
 }

@@ -93,6 +93,7 @@ public class ContributeServiceImpl implements ContributeService {
             String contribute = map.get(studentId.toString());
             if (StringUtils.isNotBlank(contribute) && contribute.equals("0")) {
                 redisUtils.putKeys(batchId.toString(), studentId.toString(), "1");
+                map.put(studentId.toString(),"1");
                 createContributedRecord(studentId, Session.getUserId(), batchId);
                 updateStudentContribute(studentId, Session.getUserId());
                 updateReleaseStudent(studentId, batchId);

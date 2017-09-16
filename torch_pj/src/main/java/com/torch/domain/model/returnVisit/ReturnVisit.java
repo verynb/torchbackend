@@ -5,17 +5,17 @@
 package com.torch.domain.model.returnVisit;
 
 import com.torch.domain.model.common.IdEntity;
-import java.io.Serializable;
-import java.util.List;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+import java.io.Serializable;
 
 /**
  * @author yj 2017-01-18 11:16:14
@@ -49,10 +49,18 @@ public class ReturnVisit extends IdEntity implements Serializable {
    */
   private String returnInfo;
 
-  /**
-   * 回访图片
-   */
-  private String returnPhotos;
+  //学生本人
+  @ApiModelProperty(value = "学生本人图片,一张或多张", required = false)
+  private String studentPhotos;
+
+  //家庭成员
+  @ApiModelProperty(value = "家庭成员图片,一张或多张", required = false)
+  private String familyPhotos;
+
+  //家庭环境
+  @ApiModelProperty(value = "现场环境,一张或多张", required = false)
+  private String environmentPhotos;
+
 
   public Long getStudentId() {
     return studentId;
@@ -88,11 +96,27 @@ public class ReturnVisit extends IdEntity implements Serializable {
     this.returnInfo = returnInfo;
   }
 
-  public String getReturnPhotos() {
-    return returnPhotos;
+  public String getStudentPhotos() {
+    return studentPhotos;
   }
 
-  public void setReturnPhotos(String returnPhotos) {
-    this.returnPhotos = returnPhotos;
+  public void setStudentPhotos(String studentPhotos) {
+    this.studentPhotos = studentPhotos;
+  }
+
+  public String getFamilyPhotos() {
+    return familyPhotos;
+  }
+
+  public void setFamilyPhotos(String familyPhotos) {
+    this.familyPhotos = familyPhotos;
+  }
+
+  public String getEnvironmentPhotos() {
+    return environmentPhotos;
+  }
+
+  public void setEnvironmentPhotos(String environmentPhotos) {
+    this.environmentPhotos = environmentPhotos;
   }
 }

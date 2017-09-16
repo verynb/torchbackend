@@ -64,4 +64,6 @@ public class VolunteerDetailResultDto {
 
 	@ApiModelProperty(value = "备注", required = false)
 	private String remark;
+
+	private Integer status;
 }

@@ -66,4 +66,6 @@ public class VolunteerAddCommand {
   @ApiModelProperty(value = "备注", required = false)
   private String remark;
 
+  private Integer status;//0正常1冻结
+
 }

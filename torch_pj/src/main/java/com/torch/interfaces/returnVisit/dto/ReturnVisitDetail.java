@@ -2,6 +2,8 @@ package com.torch.interfaces.returnVisit.dto;
 
 import com.torch.interfaces.common.facade.dto.CodeMessage;
 import java.util.List;
+
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,9 +35,17 @@ public class ReturnVisitDetail {
    */
   private String returnInfo;
 
-  /**
-   * 回访图片
-   */
-  private List<String> returnPhotos;
+  //学生本人
+  @ApiModelProperty(value = "学生本人图片,一张或多张", required = false)
+  private List<String> studentPhotos;
+
+  //家庭成员
+  @ApiModelProperty(value = "家庭成员图片,一张或多张", required = false)
+  private List<String> familyPhotos;
+
+  //家庭环境
+  @ApiModelProperty(value = "现场环境,一张或多张", required = false)
+  private List<String> environmentPhotos;
+
 
 }

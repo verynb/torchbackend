@@ -55,10 +55,8 @@ import com.torch.interfaces.returnVisit.dto.ReturnVisitListDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections.CollectionUtils;
@@ -112,8 +110,14 @@ public class ReturnVisitResource {
   @RequestMapping(path = "/returnVisit", method = POST)
   @ResponseStatus(HttpStatus.OK)
   public ReturnIdDto createReturnVisit(@Valid @RequestBody CreateReturnVisitDto dto) {
-    if (CollectionUtils.isNotEmpty(dto.getReturnPhotos())) {
-      dto.setReturnPhotos(uploadVistPhoto(dto.getReturnPhotos()));
+    if (CollectionUtils.isNotEmpty(dto.getStudentPhotos())) {
+      dto.setStudentPhotos(uploadVistPhoto(dto.getStudentPhotos()));
+    }
+    if (CollectionUtils.isNotEmpty(dto.getFamilyPhotos())) {
+      dto.setFamilyPhotos(uploadVistPhoto(dto.getFamilyPhotos()));
+    }
+    if (CollectionUtils.isNotEmpty(dto.getEnvironmentPhotos())) {
+      dto.setEnvironmentPhotos(uploadVistPhoto(dto.getEnvironmentPhotos()));
     }
     return ReturnIdDto.builder()
         .codeMessage(new CodeMessage())
