@@ -126,7 +126,7 @@ public class StudentServiceImpl implements StudentService {
         Page<Student> page = studentRepository.findAll(conditions, pageable);
         if (CollectionUtils.isNotEmpty(page.getContent())) {
             page.getContent().forEach(student -> {
-                if (student.getApproval() != null && student.getApproval().equals(false))
+                if (student.getStatus() != null && student.getStatus().equals(7))
                     return;
                 list.add(toDetailDto(student));
             });
@@ -173,6 +173,7 @@ public class StudentServiceImpl implements StudentService {
                     .findOne(student.getSponsorId() == null ? 0 : student.getSponsorId());
             dto.setSponsorName(user == null ? "" : user.getName());
             dto.setSponsorId(student.getSponsorId());
+            dto.setSponsorPhone(user == null ? "" : user.getMobile());
         }
         return dto;
     }

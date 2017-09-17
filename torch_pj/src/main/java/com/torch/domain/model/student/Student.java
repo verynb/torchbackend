@@ -116,6 +116,7 @@ public class Student extends IdEntity implements Serializable {
    * 4.已发布
    * 5.预订
    * 6.已结队
+   * 7.审核未通过
    */
   private Integer status;
 

@@ -68,6 +68,6 @@ public class ReleaseListDto {
   private String schoolName;
 
   @ApiModelProperty(name = "审核得分", required = true, position = 9)
-  private double scores;
+  private Double scores;
 
 }

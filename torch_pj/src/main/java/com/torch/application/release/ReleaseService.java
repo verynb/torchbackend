@@ -26,7 +26,7 @@ public interface ReleaseService {
 
   void addReleaseStudent(List<AddReleaseStudentCommand> commands);
 
-  void deleteReleaseStudent(Long id);
+  void deleteReleaseStudent(Long id,Boolean approval);
   void deleteRelease(Long id);
 
   void release(Long batchId, List<ReleaseStudentDto> releaseStudentIds);

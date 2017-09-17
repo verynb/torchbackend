@@ -124,6 +124,9 @@ public class StudentDetail {
   @ApiModelProperty(name = "当前资助人名字", required = true, position = 13)
   private String sponsorName;
 
+  @ApiModelProperty(name = "当前资助人号码", required = true, position = 13)
+  private String sponsorPhone;
+
   /**
    * 0.正常
    * 1.结案
@@ -146,6 +149,9 @@ public class StudentDetail {
 
   @ApiModelProperty(name = "家庭联系电话", required = true, position = 11)
   private String familyPhone;
+
+  private Boolean approval;//true为通过,false为末通过
+
   public CodeMessage getCodeMessage() {
     return codeMessage;
   }
@@ -376,5 +382,29 @@ public class StudentDetail {
 
   public void setLearningStatus(String learningStatus) {
     this.learningStatus = learningStatus;
+  }
+
+  public String getSponsorPhone() {
+    return sponsorPhone;
+  }
+
+  public void setSponsorPhone(String sponsorPhone) {
+    this.sponsorPhone = sponsorPhone;
+  }
+
+  public String getFamilyPhone() {
+    return familyPhone;
+  }
+
+  public void setFamilyPhone(String familyPhone) {
+    this.familyPhone = familyPhone;
+  }
+
+  public Boolean getApproval() {
+    return approval;
+  }
+
+  public void setApproval(Boolean approval) {
+    this.approval = approval;
   }
 }

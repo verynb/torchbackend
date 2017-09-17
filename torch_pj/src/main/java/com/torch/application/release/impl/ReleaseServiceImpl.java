@@ -137,7 +137,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
     @Override
     @Transient
-    public void deleteReleaseStudent(Long id) {
+    public void deleteReleaseStudent(Long id,Boolean approval) {
         ReleaseStudent releaseStudent = releaseStudentRepository.findOne(id);
         if (!Objects.isNull(releaseStudent)) {
             releaseStudentRepository.delete(releaseStudent);
@@ -146,12 +146,15 @@ public class ReleaseServiceImpl implements ReleaseService {
                 if (student.getStatus() >= 4) {
                     throw new TorchException("已经发布不能删除");
                 }
-                student.setStatus(0);
+                if(approval!= null && !approval){
+                    student.setStatus(7);
+                }else {
+                    student.setStatus(0);
+                }
                 studentRepository.save(student);
             }
         }
     }
-
     @Override
     @Transient
     public void deleteRelease(Long id) {
@@ -176,7 +179,6 @@ public class ReleaseServiceImpl implements ReleaseService {
     public void release(Long batchId, List<ReleaseStudentDto> releaseStudentIds) {
 
         List<ReleaseStudent> res = (List<ReleaseStudent>) releaseStudentRepository.findAll(QReleaseStudent.releaseStudent.batchId.eq(batchId));
-        List<ReleaseStudent> filterList = Lists.newArrayList();
         for (ReleaseStudentDto id : releaseStudentIds) {
             ReleaseStudent releaseStudent = releaseStudentRepository.findOne(id.getReleaseStudentId());
             if (releaseStudent != null) {
@@ -196,16 +198,8 @@ public class ReleaseServiceImpl implements ReleaseService {
                 student.setStatus(4);
                 student.setApproval(true);
                 studentRepository.save(student);
-                filterList = res.stream().filter(re -> !re.getId().equals(releaseStudent.getId()))
-                        .collect(Collectors.toList());
             }
-            filterList.forEach(f ->{
-                Student student = studentRepository.findOne(releaseStudent.getStudentId());
-                student.setApproval(false);
-                studentRepository.save(student);
-            });
         }
-
         if (releaseStudentRepository.count(QReleaseStudent.releaseStudent.batchId.eq(batchId)
                 .and(QReleaseStudent.releaseStudent.status.ne(4))) == 0) {
             Release release = releaseRepository.findOne(batchId);
