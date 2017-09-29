@@ -150,6 +150,9 @@ public class StudentDetail {
   @ApiModelProperty(name = "家庭联系电话", required = true, position = 11)
   private String familyPhone;
 
+  @ApiModelProperty(name = "就读学校", required = true, position = 11)
+  private String attendSchool;
+
   private Boolean approval;//true为通过,false为末通过
 
   public CodeMessage getCodeMessage() {
@@ -406,5 +409,13 @@ public class StudentDetail {
 
   public void setApproval(Boolean approval) {
     this.approval = approval;
+  }
+
+  public String getAttendSchool() {
+    return attendSchool;
+  }
+
+  public void setAttendSchool(String attendSchool) {
+    this.attendSchool = attendSchool;
   }
 }

@@ -70,7 +70,7 @@ public class AddStudentCommand{
   /**
    * 出生日期
    */
-  @NotBlank
+//  @NotBlank
   @ApiModelProperty(name = "出生日期", required = true, position = 3)
   private String birthday;
   /**
@@ -142,6 +142,9 @@ public class AddStudentCommand{
 
   @ApiModelProperty(name = "家庭联系电话", required = true, position = 11)
   private String familyPhone;
+
+  @ApiModelProperty(name = "就读学校", required = true, position = 11)
+  private String attendSchool;
 
   public String getHeadPhoto() {
     return headPhoto;
@@ -341,5 +344,13 @@ public class AddStudentCommand{
 
   public void setFamilyPhone(String familyPhone) {
     this.familyPhone = familyPhone;
+  }
+
+  public String getAttendSchool() {
+    return attendSchool;
+  }
+
+  public void setAttendSchool(String attendSchool) {
+    this.attendSchool = attendSchool;
   }
 }

@@ -52,7 +52,7 @@ public class UpdateStudentCommand {
   /**
    * 出生日期
    */
-  @NotBlank
+//  @NotBlank
   @ApiModelProperty(name = "出生日期", required = true, position = 4)
   private String birthday;
   /**
@@ -143,6 +143,9 @@ public class UpdateStudentCommand {
 
   @ApiModelProperty(name = "家庭联系电话", required = true, position = 11)
   private String familyPhone;
+
+  @ApiModelProperty(name = "就读学校", required = true, position = 11)
+  private String attendSchool;
 
   public Long getId() {
     return id;
@@ -342,5 +345,21 @@ public class UpdateStudentCommand {
 
   public void setLearningStatus(String learningStatus) {
     this.learningStatus = learningStatus;
+  }
+
+  public String getFamilyPhone() {
+    return familyPhone;
+  }
+
+  public void setFamilyPhone(String familyPhone) {
+    this.familyPhone = familyPhone;
+  }
+
+  public String getAttendSchool() {
+    return attendSchool;
+  }
+
+  public void setAttendSchool(String attendSchool) {
+    this.attendSchool = attendSchool;
   }
 }
