@@ -199,11 +199,11 @@ public class StudentExcelServiceImpl {
         .getCell(4)
         .setCellValue((sp == null || StringUtils.isBlank(sp.getMobile())) ? "" : sp.getMobile());
 
-    if (StringUtils.isNotBlank(student.getHeadPhoto())) {
+//    if (StringUtils.isNotBlank(student.getHeadPhoto())) {
       URL u = new URL("http://" + url);
       Drawing patriarch = sheet.createDrawingPatriarch();
       insertImage(workbook, patriarch, getImageData(ImageIO.read(u)), 2, 0, 1);
-    }
+//    }
 
     String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
     OutputStream out = new FileOutputStream(path);
