@@ -223,7 +223,7 @@ public class UserResource {
             conditions.and(QUser.user.mobile.like(phone));
         }
         if (StringUtils.isNotBlank(name)) {
-            conditions.and(QUser.user.name.contains(name));
+            conditions.and(QUser.user.name.like(name));
         }
         Page<User> page = userRepository.findAll(conditions, pageable);
         List<SponsorDetailResultDto> dtos = Lists.newArrayList();
