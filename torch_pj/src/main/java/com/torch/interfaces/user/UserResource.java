@@ -220,7 +220,7 @@ public class UserResource {
         }
         BooleanBuilder conditions = new BooleanBuilder(QUser.user.type.eq(1));
         if (StringUtils.isNotBlank(phone)) {
-            conditions.and(QUser.user.mobile.eq(phone));
+            conditions.and(QUser.user.mobile.like(phone));
         }
         if (StringUtils.isNotBlank(name)) {
             conditions.and(QUser.user.name.contains(name));
