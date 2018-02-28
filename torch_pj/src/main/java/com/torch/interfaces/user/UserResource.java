@@ -220,10 +220,10 @@ public class UserResource {
         }
         BooleanBuilder conditions = new BooleanBuilder(QUser.user.type.eq(1));
         if (StringUtils.isNotBlank(phone)) {
-            conditions.and(QUser.user.mobile.like(phone));
+            conditions.and(QUser.user.mobile.contains(phone));
         }
         if (StringUtils.isNotBlank(name)) {
-            conditions.and(QUser.user.name.like(name));
+            conditions.and(QUser.user.name.contains(name));
         }
         Page<User> page = userRepository.findAll(conditions, pageable);
         List<SponsorDetailResultDto> dtos = Lists.newArrayList();
