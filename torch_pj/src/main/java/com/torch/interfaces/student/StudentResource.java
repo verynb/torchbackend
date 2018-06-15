@@ -257,6 +257,20 @@ public class StudentResource {
 
     @RoleCheck
     @ApiOperation(value = "导出学生信息", notes = "", httpMethod = "GET")
+    @RequestMapping(path = "/students/import", method = GET)
+    public ReturnDto imports() {
+        try {
+            studentExcelService.importStudent();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ReturnDto.builder()
+            .codeMessage(new CodeMessage())
+            .build();
+    }
+
+    @RoleCheck
+    @ApiOperation(value = "导出学生信息", notes = "", httpMethod = "GET")
     @RequestMapping(path = "/students/export/{id}", method = GET)
     public ReturnDto export(
             @ApiParam(value = "邮件地址") @RequestParam String email, @PathVariable("id") Long id) {

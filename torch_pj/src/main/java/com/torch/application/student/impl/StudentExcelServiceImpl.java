@@ -4,6 +4,7 @@
  */
 package com.torch.application.student.impl;
 
+import com.google.common.collect.Lists;
 import com.torch.SendMailUtils;
 import com.torch.application.upload.PhotoPath;
 import com.torch.domain.model.release.QReleaseStudent;
@@ -38,6 +39,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
@@ -175,7 +177,7 @@ public class StudentExcelServiceImpl {
   }
 
 
-  public void exportStudentPhoto(Long id, String email,String url) throws Exception {
+  public void exportStudentPhoto(Long id, String email, String url) throws Exception {
     Student student = studentRepository.findOne(id);
     if (Objects.isNull(student)) {
       throw new TorchException("学生无效");
@@ -200,9 +202,9 @@ public class StudentExcelServiceImpl {
         .setCellValue((sp == null || StringUtils.isBlank(sp.getMobile())) ? "" : sp.getMobile());
 
 //    if (StringUtils.isNotBlank(student.getHeadPhoto())) {
-      URL u = new URL("http://" + url);
-      Drawing patriarch = sheet.createDrawingPatriarch();
-      insertImage(workbook, patriarch, getImageData(ImageIO.read(u)), 2, 0, 1);
+    URL u = new URL("http://" + url);
+    Drawing patriarch = sheet.createDrawingPatriarch();
+    insertImage(workbook, patriarch, getImageData(ImageIO.read(u)), 2, 0, 1);
 //    }
 
     String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
@@ -278,13 +280,12 @@ public class StudentExcelServiceImpl {
         .setCellValue((StringUtils.isBlank(student.getAddress())) ? "" : student.getAddress());
 
     sheet.getRow(14)
-            .getCell(1)
-            .setCellValue("");
+        .getCell(1)
+        .setCellValue("");
 
     sheet.getRow(14)
-            .getCell(5)
-            .setCellValue("");
-
+        .getCell(5)
+        .setCellValue("");
 
     //联系电话待维护
 
@@ -311,12 +312,12 @@ public class StudentExcelServiceImpl {
     sheet.getRow(40)
         .getCell(4)
         .setCellValue(
-            CollectionUtils.isEmpty(res) ? "" : res.get(0).getNeedMoney()+"");
+            CollectionUtils.isEmpty(res) ? "" : res.get(0).getNeedMoney() + "");
 
     sheet.getRow(42)
         .getCell(3)
         .setCellValue(
-            StringUtils.isBlank(student.getName())?"":student.getName());
+            StringUtils.isBlank(student.getName()) ? "" : student.getName());
 
     String path = PhotoPath.NEW_EXCEL + new DateTime().getMillis() + ".xls";
 //    String path = "D:\\" + new DateTime().getMillis() + ".xls";
@@ -327,6 +328,89 @@ public class StudentExcelServiceImpl {
     JavaMailSenderImpl sender = SendMailUtils.initJavaMailSender();
     SendMailUtils.sendWithAttament(sender, tops, "受助人承诺书打印", "", "受助人承诺书打印.xls", path);
 
+  }
+
+  @Transient
+  public void importStudent() throws Exception {
+
+    InputStream inputStream = new FileInputStream("D:\\火炬助学\\torchbackend\\student.xlsx");
+    Workbook workbook = WorkbookFactory.create(inputStream);
+    Sheet sheet = workbook.getSheet("sheet1");
+//    List<Student> students = Lists.newArrayList();
+    for (int i = 2; i < 92; i++) {
+      String sNo = String.valueOf(sheet.getRow(i).getCell(0).getStringCellValue());
+//      String sNo="";
+      String area = "三都水族自治县";
+      String city = "普安县";
+      String name = sheet.getRow(i).getCell(3).getStringCellValue();
+      String gender = sheet.getRow(i).getCell(4).getStringCellValue();
+      String nation = sheet.getRow(i).getCell(5).getStringCellValue();
+      String identityCard = sheet.getRow(i).getCell(6).getStringCellValue();
+      String attendSchool = sheet.getRow(i).getCell(7).getStringCellValue();
+      Long schoolId = 0L;
+      if (attendSchool.equals("交梨民族中学")) {
+        schoolId = 38L;
+      }
+      if (attendSchool.equals("普安中学")) {
+        schoolId = 40L;
+      }
+      String grade = "";
+      String gradeCode = "";
+      String clbum = "";
+      String gradeN = sheet.getRow(i).getCell(8).getStringCellValue();
+      if (gradeN.contains("七")) {
+        grade = "七年级";
+        gradeCode = "seven";
+      }
+      if (gradeN.contains("八")) {
+        grade = "八年级";
+        gradeCode = "eight";
+      }
+      if (gradeN.contains("九")) {
+        grade = "九年级";
+        gradeCode = "nine";
+      }
+      if (gradeN.contains("1")) {
+        clbum = "1";
+      }
+      if (gradeN.contains("2")) {
+        clbum = "2";
+      }
+      if (gradeN.contains("3")) {
+        clbum = "3";
+      }
+      if (gradeN.contains("4")) {
+        clbum = "4";
+      }
+      if (gradeN.contains("5")) {
+        clbum = "5";
+      }
+      String address = sheet.getRow(i).getCell(9).getStringCellValue();
+      String familyPhone = sheet.getRow(i).getCell(10).getStringCellValue();
+      Boolean approval = true;
+      Long sponsorId = 0L;
+      Integer status = 0;
+
+      Student student = new Student();
+      student.setsNo(sNo);
+      student.setArea(area);
+      student.setCity(city);
+      student.setName(name);
+      student.setGender(gender);
+      student.setNation(nation);
+      student.setIdentityCard(identityCard);
+      student.setAttendSchool(attendSchool);
+      student.setSchoolId(schoolId);
+      student.setGrade(grade);
+      student.setGradeCode(gradeCode);
+      student.setClbum(clbum);
+      student.setAddress(address);
+      student.setFamilyPhone(familyPhone);
+      student.setApproval(approval);
+      student.setSponsorId(sponsorId);
+      student.setStatus(status);
+      studentRepository.save(student);
+    }
   }
 
 
